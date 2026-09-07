@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Personal Event Tracking",
   description: "Person Event TRacking",
+  outDir: 'public',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
