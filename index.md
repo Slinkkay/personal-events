@@ -4,7 +4,7 @@ layout: home
 
 hero:
   name: "Personal Event Tracking"
-  text: "Person Event TRacking"
+  text: "Person Event Tracking"
   tagline: My great project tagline
   actions:
     - theme: brand
