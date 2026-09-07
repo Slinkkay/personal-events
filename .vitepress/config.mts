@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Personal Event Tracking",
-  description: "Person Event TRacking",
+  // description: "Personal Event Tracking",
   outDir: 'public',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
