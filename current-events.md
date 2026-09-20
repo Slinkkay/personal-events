@@ -1,6 +1,8 @@
 # Current Events
 
-## Document Tracked
+## Document
+
+### Tracked
 
 ```json
 {
@@ -15,14 +17,40 @@
 Identifies a document which should be tracked
 
 
-## Resource Linked
+### Untracked
+
+Removes a document from being tracked.
+
+```json
+{
+    "type": "document:untracked",
+    "payload": {
+        "id" : "document:id",
+    }
+}
+```
+
+## Resource
+
+### Linked
 
 ```json
 {
     "type": "resource:linked",
     "payload": {
+        "id": "link:id",
         "edge-one": "document:id",
         "edge-two": "tag:id"
+    }
+}
+```
+
+### Unlinked
+```json
+{
+    "type": "resource:unlinked",
+    "payload": {
+        "id": "link:id",
     }
 }
 ```
