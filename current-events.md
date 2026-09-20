@@ -8,7 +8,8 @@
 {
     "timestamp": "2026-09-20T02:49:08.547Z",
     "sequence": 0,
-    "type": "document:tracked",
+    "namespace": "document",
+    "type": "tracked",
     "payload": {
         "id" : "document:id",
         "uri": "https://drive.google.com/some-location"
@@ -27,7 +28,8 @@ Removes a document from being tracked.
 {
     "timestamp": "2026-09-20T02:49:08.547Z",
     "sequence": 0,
-    "type": "document:untracked",
+    "namespace": "document",
+    "type": "untracked",
     "payload": {
         "id" : "document:id",
     }
@@ -42,7 +44,8 @@ Removes a document from being tracked.
 {
     "timestamp": "2026-09-20T02:49:08.547Z",
     "sequence": 0,
-    "type": "resource:linked",
+    "namespace": "resource",
+    "type": "linked",
     "payload": {
         "id": "link:id",
         "edge-one": "document:id",
@@ -56,7 +59,8 @@ Removes a document from being tracked.
 {
     "timestamp": "2026-09-20T02:49:08.547Z",
     "sequence": 0,
-    "type": "resource:unlinked",
+    "namespace": "resource",
+    "type": "unlinked",
     "payload": {
         "id": "link:id",
     }
