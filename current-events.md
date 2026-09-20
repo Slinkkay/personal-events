@@ -6,6 +6,8 @@
 
 ```json
 {
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
     "type": "document:tracked",
     "payload": {
         "id" : "document:id",
@@ -23,6 +25,8 @@ Removes a document from being tracked.
 
 ```json
 {
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
     "type": "document:untracked",
     "payload": {
         "id" : "document:id",
@@ -36,6 +40,8 @@ Removes a document from being tracked.
 
 ```json
 {
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
     "type": "resource:linked",
     "payload": {
         "id": "link:id",
@@ -48,6 +54,8 @@ Removes a document from being tracked.
 ### Unlinked
 ```json
 {
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
     "type": "resource:unlinked",
     "payload": {
         "id": "link:id",
