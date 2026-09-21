@@ -1,5 +1,36 @@
 # Current Events
 
+## Role
+
+## Added
+
+```json
+{
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
+    "namespace": "role",
+    "type": "added",
+    "payload": {
+        "id": "role:id",
+        "name": "Some Role Name"
+    }
+}
+```
+
+### Retired
+
+```json
+{
+    "timestamp": "2026-09-20T02:49:08.547Z",
+    "sequence": 0,
+    "namespace": "role",
+    "type": "retired",
+    "payload": {
+        "id": "role:id"
+    }
+}
+```
+
 ## Document
 
 ### Tracked
