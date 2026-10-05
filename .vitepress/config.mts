@@ -18,6 +18,12 @@ export default defineConfig({
           { text: "Current Events", link: "/current-events" },
         ],
       },
+      {
+        text: "Roles, Responsibility, Requests",
+        items: [
+          { text: "SQL Table", link: "/docs/sql-statement"}
+        ]
+      }
     ],
 
     socialLinks: [
