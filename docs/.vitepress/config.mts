@@ -4,7 +4,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "Personal Event Tracking",
   description: "Personal Event Tracking",
-  outDir: "public",
+  outDir: "../public",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [{ text: "Home", link: "/" }],
@@ -13,15 +13,15 @@ export default defineConfig({
       {
         text: "Event",
         items: [
-          { text: "Theory", link: "/docs/theory" },
-          { text: "Event Concepts", link: "/docs/event-concepts"},
-          { text: "Current Events", link: "/docs/current-events" },
+          { text: "Theory", link: "/theory" },
+          { text: "Event Concepts", link: "/event-concepts"},
+          { text: "Current Events", link: "/current-events" },
         ],
       },
       {
         text: "Roles, Responsibility, Requests",
         items: [
-          { text: "SQL Table", link: "/docs/sql-statement"}
+          { text: "SQL Table", link: "/sql-statement"}
         ]
       }
     ],
