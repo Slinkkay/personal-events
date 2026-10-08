@@ -1,29 +1,29 @@
 image: node:24
 
 variables:
-  # Store pnpm store inside the project path so GitLab CI can cache it
-  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-store"
+    # Store pnpm store inside the project path so GitLab CI can cache it
+    PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-store"
 
 pages:
-  cache:
-    key:
-      files:
-        - pnpm-lock.yaml
-    paths:
-      - .pnpm-store/
-      - node_modules/
+    cache:
+        key:
+            files:
+                - pnpm-lock.yaml
+        paths:
+            - .pnpm-store/
+            - node_modules/
 
-  before_script:
-    - corepack enable
-    - corepack prepare pnpm@latest --activate
+    before_script:
+        - corepack enable
+        - corepack prepare pnpm@latest --activate
 
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm run docs:build
+    script:
+        - pnpm install --frozen-lockfile
+        - pnpm run docs:build
 
-  artifacts:
-    paths:
-      - public
+    artifacts:
+        paths:
+            - public
 
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    rules:
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

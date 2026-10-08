@@ -3,6 +3,7 @@
 ## Tables
 
 ### Request (request)
+
 ```sql
 CREATE TABLE request (
     index INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -14,6 +15,7 @@ CREATE TABLE request (
 ```
 
 ### Responsibility (responsibility)
+
 ```sql
 CREATE TABLE responsibility (
     index INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,8 +26,8 @@ CREATE TABLE responsibility (
 );
 ```
 
-
 ### Role (role)
+
 ```sql
 CREATE TABLE role (
     index INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,8 +37,8 @@ CREATE TABLE role (
 );
 ```
 
-
 ### Role Responsibility (role_responsibility)
+
 ```sql
 CREATE TABLE role_responsibility (
     id TEXT NOT NULL,
@@ -46,6 +48,7 @@ CREATE TABLE role_responsibility (
 ```
 
 ### Responsibility Request (responsibility_request)
+
 ```sql
 CREATE TABLE responsibility_request (
     id TEXT NOT NULL,
@@ -57,33 +60,31 @@ CREATE TABLE responsibility_request (
 ### Query
 
 #### Find Requests where ID
+
 ```sql
     select * from request where id = ?
 ```
 
 #### Find Responsibility where ID
+
 ```sql
     select * from responsibility where id = ?
 ```
 
 #### Find Role where ID
+
 ```sql
     select * from role where id = ?
 ```
 
 #### Find Requests associated with Responsibility
+
 ```sql
     select * from role where id = ?
 ```
 
-
-
 ### Insert
-
 
 ### Update
 
-
 ### Delete
-
-
