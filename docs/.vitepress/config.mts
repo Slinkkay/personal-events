@@ -13,9 +13,9 @@ export default defineConfig({
       {
         text: "Event",
         items: [
-          { text: "Theory", link: "/theory" },
-          { text: "Event Concepts", link: "/event-concepts"},
-          { text: "Current Events", link: "/current-events" },
+          { text: "Theory", link: "/docs/theory" },
+          { text: "Event Concepts", link: "/docs/event-concepts"},
+          { text: "Current Events", link: "/docs/current-events" },
         ],
       },
       {
