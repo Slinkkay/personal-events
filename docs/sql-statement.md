@@ -6,7 +6,7 @@
 
 ```sql
 CREATE TABLE request (
-    index INTEGER PRIMARY KEY AUTOINCREMENT,
+    idx INTEGER PRIMARY KEY AUTOINCREMENT,
     id TEXT NOT NULL,
     description TEXT NOT NULL,
     due_date TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE request (
 
 ```sql
 CREATE TABLE responsibility (
-    index INTEGER PRIMARY KEY AUTOINCREMENT,
+    idx INTEGER PRIMARY KEY AUTOINCREMENT,
     id TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE responsibility (
 
 ```sql
 CREATE TABLE role (
-    index INTEGER PRIMARY KEY AUTOINCREMENT,
+    idx INTEGER PRIMARY KEY AUTOINCREMENT,
     id TEXT NOT NULL,
     name TEXT NOT NULL,
     description TEXT NOT NULL

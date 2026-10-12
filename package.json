@@ -15,16 +15,20 @@
     "license": "ISC",
     "type": "module",
     "devDependencies": {
+        "@types/better-sqlite3": "^9.6.0",
         "@types/node": "^26.6.4",
         "husky": "^9.1.7",
         "lint-staged": "^17.6.0",
         "prettier": "3.9.9",
         "tsx": "^4.23.15",
         "typescript": "5.9.3",
-        "vitepress": "^1.6.4"
+        "vitepress": "^1.6.4",
+        "vitest": "^4.1.11",
+        "vitest-when": "0.10.2"
     },
     "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9",
     "dependencies": {
+        "better-sqlite3": "^13.0.3",
         "commander": "^15.0.0"
     }
 }
