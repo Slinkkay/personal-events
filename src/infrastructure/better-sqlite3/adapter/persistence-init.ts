@@ -22,13 +22,21 @@ const createResponsibilityStatement = (table: string) => `
     );
 `;
 
-const createRequestStatement = (table: string) => `
+const createRequestTable = (table: string) => `
     CREATE TABLE ${table} (
         idx INTEGER PRIMARY KEY AUTOINCREMENT,
         id TEXT NOT NULL,
         description TEXT NOT NULL,
         due_date TEXT,
         status TEXT NOT NULL DEFAULT 'pending'
+    );
+`;
+
+const createRoleToResponsibilityTable = (table: string) => `
+    CREATE TABLE ${table} (
+         id TEXT NOT NULL,
+         source TEXT NOT NULL,
+         destination TEXT NOT NULL
     );
 `;
 
@@ -65,7 +73,22 @@ export function makePersistenceInit(client: Database, config: SqliteConfig, appL
         },
         createRequestPersistence: () => {
             try {
-                const createResponsibilityTable = client.prepare(createRequestStatement(config.tables.request));
+                const createResponsibilityTable = client.prepare(createRequestTable(config.tables.request));
+                createResponsibilityTable.run([]);
+            } catch (err: any) {
+                appLogger.error({
+                    type: "sqlite-init-error",
+                    err,
+                });
+                return failure();
+            }
+            return success();
+        },
+        createRoleToResponsibilityPersistence: () => {
+            try {
+                const createResponsibilityTable = client.prepare(
+                    createRoleToResponsibilityTable(config.tables.roleToResponsibility),
+                );
                 createResponsibilityTable.run([]);
             } catch (err: any) {
                 appLogger.error({

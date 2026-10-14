@@ -25,6 +25,7 @@ export async function initCLiRoot(root: CliCompositionRoot): Promise<Result> {
             role: "role",
             responsibility: "responsibility",
             request: "request",
+            roleToResponsibility: "roleToResponsibility",
         },
         fileName: join("data", "app.sqlite"),
     };

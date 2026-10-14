@@ -8,6 +8,7 @@ export type SqliteConfig = {
         role: string;
         responsibility: string;
         request: string;
+        roleToResponsibility: string;
     };
 };
 
