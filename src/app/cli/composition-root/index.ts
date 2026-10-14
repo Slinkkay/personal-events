@@ -24,6 +24,7 @@ export async function initCLiRoot(root: CliCompositionRoot): Promise<Result> {
         tables: {
             role: "role",
             responsibility: "responsibility",
+            request: "request",
         },
         fileName: join("data", "app.sqlite"),
     };

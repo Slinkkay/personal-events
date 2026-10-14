@@ -7,6 +7,7 @@ export type SqliteConfig = {
     tables: {
         role: string;
         responsibility: string;
+        request: string;
     };
 };
 

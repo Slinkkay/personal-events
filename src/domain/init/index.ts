@@ -8,6 +8,7 @@ export type SystemInit = {
 export type PersistenceInit = {
     createRolePersistence(): Result;
     createResponsibilityPersistence(): Result;
+    createRequestPersistence(): Result;
 };
 
 export function makeSystemInit(persistence: PersistenceInit, appLogger: AppLogger): SystemInit {
@@ -21,6 +22,10 @@ export function makeSystemInit(persistence: PersistenceInit, appLogger: AppLogge
                 {
                     type: "responsibility",
                     init: () => persistence.createResponsibilityPersistence(),
+                },
+                {
+                    type: "request",
+                    init: () => persistence.createRequestPersistence(),
                 },
             ];
 
