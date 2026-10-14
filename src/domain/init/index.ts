@@ -7,19 +7,32 @@ export type SystemInit = {
 
 export type PersistenceInit = {
     createRolePersistence(): Result;
+    createResponsibilityPersistence(): Result;
 };
 
 export function makeSystemInit(persistence: PersistenceInit, appLogger: AppLogger): SystemInit {
     return {
         init: async () => {
-            const roleResult = persistence.createRolePersistence();
+            const sequence = [
+                {
+                    type: "role",
+                    init: () => persistence.createRolePersistence(),
+                },
+                {
+                    type: "responsibility",
+                    init: () => persistence.createResponsibilityPersistence(),
+                },
+            ];
 
-            if (!isSuccess(roleResult)) {
-                appLogger.error({
-                    type: "systemInit:failure",
-                    message: "failed to init role persistence",
-                });
-                return failure();
+            for (const item of sequence) {
+                const result = item.init();
+                if (!isSuccess(result)) {
+                    appLogger.error({
+                        type: "systemInit:failure",
+                        message: `failed to init ${item.type} persistence`,
+                    });
+                    return failure();
+                }
             }
 
             appLogger.info({
