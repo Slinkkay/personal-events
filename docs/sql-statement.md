@@ -1,8 +1,20 @@
-## SQL Statements
+# Generic
 
-## Tables
+## Generic Query
 
-### Request (request)
+### Find the lastest entry that contains idx
+
+```sql
+    SELECT idx FROM ${table}
+    ORDER BY idx DESC
+    LIMIT 1;
+```
+
+# Tables
+
+## Request (request)
+
+### Table Create
 
 ```sql
 CREATE TABLE request (
@@ -14,7 +26,17 @@ CREATE TABLE request (
 );
 ```
 
-### Responsibility (responsibility)
+### Query
+
+#### Find Requests where ID
+
+```sql
+    select * from request where id = ?
+```
+
+## Responsibility (responsibility)
+
+### Table Create
 
 ```sql
 CREATE TABLE responsibility (
@@ -26,7 +48,17 @@ CREATE TABLE responsibility (
 );
 ```
 
-### Role (role)
+### Query
+
+#### Find Responsibility where ID
+
+```sql
+    select * from responsibility where id = ?
+```
+
+## Role (role)
+
+### Table Create
 
 ```sql
 CREATE TABLE role (
@@ -37,7 +69,24 @@ CREATE TABLE role (
 );
 ```
 
-### Role Responsibility (role_responsibility)
+### Insert
+
+```sql
+    INSERT INTO ${table} (id, name, description)
+    VALUES (?, ?, ?);
+```
+
+### Query
+
+#### Find Role where ID
+
+```sql
+    select * from role where id = ?
+```
+
+## Role Responsibility (role_responsibility)
+
+### Table Create
 
 ```sql
 CREATE TABLE role_responsibility (
@@ -47,7 +96,9 @@ CREATE TABLE role_responsibility (
 );
 ```
 
-### Responsibility Request (responsibility_request)
+## Responsibility Request (responsibility_request)
+
+### Table Create
 
 ```sql
 CREATE TABLE responsibility_request (
@@ -56,35 +107,3 @@ CREATE TABLE responsibility_request (
     destination TEXT NOT NULL
 );
 ```
-
-### Query
-
-#### Find Requests where ID
-
-```sql
-    select * from request where id = ?
-```
-
-#### Find Responsibility where ID
-
-```sql
-    select * from responsibility where id = ?
-```
-
-#### Find Role where ID
-
-```sql
-    select * from role where id = ?
-```
-
-#### Find Requests associated with Responsibility
-
-```sql
-    select * from role where id = ?
-```
-
-### Insert
-
-### Update
-
-### Delete

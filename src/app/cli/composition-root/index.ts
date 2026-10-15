@@ -1,8 +1,7 @@
 import { CompositionRoot, makeCompositionRoot, memoize } from "@/composition-root";
 import { CliSystemInit, makeCliSystemInit } from "../system-init";
-import { SqliteConfig } from "@/infrastructure/better-sqlite3";
 import { Result, success } from "@/result";
-import { join } from "node:path";
+import { initSqliteConfig } from "@/app/common";
 
 export type CliCompositionRoot = {
     root: CompositionRoot;
@@ -19,17 +18,7 @@ export function makeCliCompositionRoot(): CliCompositionRoot {
 }
 
 export async function initCLiRoot(root: CliCompositionRoot): Promise<Result> {
-    const sqlite: SqliteConfig = {
-        type: "sqlite",
-        tables: {
-            role: "role",
-            responsibility: "responsibility",
-            request: "request",
-            roleToResponsibility: "roleToResponsibility",
-        },
-        fileName: join("data", "app.sqlite"),
-    };
-    await root.root.init(sqlite);
+    await initSqliteConfig(root.root);
 
     return success();
 }

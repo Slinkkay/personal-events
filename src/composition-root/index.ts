@@ -1,7 +1,7 @@
 import { ContextRoot, makeContextRoot } from "./context";
 import { DomainRoot, makeDomainRoot } from "./domain";
 import { Result, success } from "@/result";
-import { makeInfrastructureRoot } from "./infrastructure";
+import { InfrastructureRoot, makeInfrastructureRoot } from "./infrastructure";
 import { AppLogger } from "@/log";
 
 export type RootInit = {
@@ -10,7 +10,7 @@ export type RootInit = {
 
 export type CompositionRoot = {
     context: ContextRoot;
-    infrastructure: RootInit;
+    infrastructure: InfrastructureRoot;
     domain: DomainRoot;
 } & RootInit;
 

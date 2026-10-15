@@ -4,6 +4,11 @@ import Sqlite from "better-sqlite3";
 export type SqliteConfig = {
     type: "sqlite";
     fileName: string;
+    prefix: {
+        role: string;
+        responsibility: string;
+        request: string;
+    };
     tables: {
         role: string;
         responsibility: string;
