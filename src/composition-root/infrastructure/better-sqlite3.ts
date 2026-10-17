@@ -5,7 +5,7 @@ import { isSqliteConfig, makeDBClient, SqliteConfig } from "@/infrastructure/bet
 import { PersistenceInit } from "@/domain/init";
 import { makeCreateRolePersistence, makePersistenceInit } from "@/infrastructure/better-sqlite3/adapter";
 import { ContextRoot } from "@/composition-root/context";
-import { CreateRolePersistence } from "@/composition-root/role";
+import { CreateRolePersistence } from "@/domain/role";
 
 export type BetterSqlite3Root = {
     getClient(): Database;

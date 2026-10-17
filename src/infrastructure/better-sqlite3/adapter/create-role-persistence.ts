@@ -1,4 +1,4 @@
-import { CreateRolePersistence } from "@/composition-root/role/create";
+import { CreateRolePersistence } from "@/domain/role";
 import { SqliteConfig } from "@/infrastructure/better-sqlite3";
 import { failure, success } from "@/result";
 import { Database } from "better-sqlite3";
