@@ -23,11 +23,11 @@ export function makeCreateResponsibilityPersistence(
     return {
         persist: async ({ name, description, id, status }) => {
             try {
-                const roleInsertStatement = db.prepare<[string, string, string, string]>(
+                const responsibilityInsertStatement = db.prepare<[string, string, string, string]>(
                     createResponsibilityInsert(sqliteConfig.tables.responsibility),
                 );
 
-                roleInsertStatement.run(id, name, description, status);
+                responsibilityInsertStatement.run(id, name, description, status);
             } catch (err: any) {
                 appLogger.error({
                     type: "sqlite-responsibility-insert",

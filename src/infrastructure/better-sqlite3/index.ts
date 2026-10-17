@@ -20,7 +20,7 @@ export type SqliteConfig = {
 
 export function isSqliteConfig(config: any): config is SqliteConfig {
     if (!config) {
-        return true;
+        return false;
     }
 
     return config.type === "sqlite";

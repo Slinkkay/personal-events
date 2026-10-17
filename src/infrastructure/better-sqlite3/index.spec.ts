@@ -18,15 +18,17 @@ describe("Infrastructure, BetterSqlite3", () => {
             const result = isSqliteConfig(config);
 
             // Validation
-            expect(result).toBeTruthy();
+            expect(result).toBeFalsy();
         });
 
         it("Properly checks for properly type object", async () => {
             // Setup
-            const config: SqliteConfig = {
+            // TODO needs to be fixed as this is not a valid config object
+            const config: any = {
                 fileName: sandbox.prefixedAlphaNumeric("fileName"),
                 tables: {
                     role: sandbox.prefixedAlphaNumeric("role"),
+                    request: sandbox.prefixedAlphaNumeric("request"),
                 },
                 type: "sqlite",
             };
