@@ -4,12 +4,12 @@ import { failure, success } from "@/result";
 import { Database } from "better-sqlite3";
 import { AppLogger } from "@/log";
 
-export const createRoleInsert = (table: string) => `
+const createRoleInsert = (table: string) => `
     INSERT INTO ${table} (id, name, description)
     VALUES (?, ?, ?);
 `;
 
-export const findLatestId = (table: string) => `
+const findLatestId = (table: string) => `
     SELECT idx FROM ${table} 
     ORDER BY idx DESC 
     LIMIT 1;
