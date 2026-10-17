@@ -10,6 +10,7 @@ export async function initSqliteConfig(root: CompositionRoot) {
             responsibility: "responsibility",
             request: "request",
             roleToResponsibility: "roleToResponsibility",
+            responsibilityToRequest: "responsibilityToRequest",
         },
         prefix: {
             role: "ROLE",

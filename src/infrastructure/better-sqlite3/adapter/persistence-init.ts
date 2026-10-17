@@ -40,6 +40,14 @@ const createRoleToResponsibilityTable = (table: string) => `
     );
 `;
 
+const createResponsibilityToRequestTable = (table: string) => `
+    CREATE TABLE ${table} (
+         id TEXT NOT NULL,
+         source TEXT NOT NULL,
+         destination TEXT NOT NULL
+    );
+`;
+
 export function makePersistenceInit(client: Database, config: SqliteConfig, appLogger: AppLogger): PersistenceInit {
     return {
         createRolePersistence: () => {
@@ -88,6 +96,21 @@ export function makePersistenceInit(client: Database, config: SqliteConfig, appL
             try {
                 const createResponsibilityTable = client.prepare(
                     createRoleToResponsibilityTable(config.tables.roleToResponsibility),
+                );
+                createResponsibilityTable.run([]);
+            } catch (err: any) {
+                appLogger.error({
+                    type: "sqlite-init-error",
+                    err,
+                });
+                return failure();
+            }
+            return success();
+        },
+        createResponsibilityToRequest: () => {
+            try {
+                const createResponsibilityTable = client.prepare(
+                    createResponsibilityToRequestTable(config.tables.responsibilityToRequest),
                 );
                 createResponsibilityTable.run([]);
             } catch (err: any) {
