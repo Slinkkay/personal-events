@@ -8,3 +8,4 @@ export * from "./update-request-description";
 export * from "./update-request-due-date";
 export * from "./update-request-status";
 export * from "./update-responsibility-name";
+export * from "./update-responsibility-description";

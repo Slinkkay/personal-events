@@ -18,11 +18,11 @@ export function makeUpdateResponsibilityName(
     return {
         update: async ({ id, name }) => {
             try {
-                const dueDateUpdateStatement = db.prepare<[string, string]>(
+                const nameUpdateStatement = db.prepare<[string, string]>(
                     createNameUpdate(sqliteConfig.tables.responsibility),
                 );
 
-                dueDateUpdateStatement.run(name, id);
+                nameUpdateStatement.run(name, id);
 
                 return success();
             } catch (err) {

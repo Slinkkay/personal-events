@@ -3,6 +3,7 @@ import {
     CreateResponsibility,
     makeAssociateToRole,
     makeCreateResponsibility,
+    UpdateResponsibilityDescription,
     UpdateResponsibilityName,
 } from "@/domain/responsibility";
 import { InfrastructureRoot } from "@/composition-root/infrastructure";
@@ -13,6 +14,7 @@ export type ResponsibilityRoot = {
     getCreateResponsibility(): CreateResponsibility;
     getAssociateToRole(): AssociateToRole;
     getUpdateResponsibilityName(): UpdateResponsibilityName;
+    getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
 };
 
 export function makeResponsibilityRoot(context: ContextRoot, infrastructure: InfrastructureRoot): ResponsibilityRoot {
@@ -31,5 +33,8 @@ export function makeResponsibilityRoot(context: ContextRoot, infrastructure: Inf
             ),
         ),
         getUpdateResponsibilityName: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateResponsibilityName()),
+        getUpdateResponsibilityDescription: memoize(() =>
+            infrastructure.betterSqlite3Adapter.getUpdateResponsibilityDescription(),
+        ),
     };
 }
