@@ -8,11 +8,13 @@ import {
     makePersistenceInit,
     makeCreateResponsibilityPersistence,
     makeCreateRequestPersistence,
+    makeAssociateToRolePersistence,
 } from "@/infrastructure/better-sqlite3/adapter";
 import { ContextRoot } from "@/composition-root/context";
 import { CreateRolePersistence } from "@/domain/role";
 import { CreateResponsibilityPersistence } from "@/domain/responsibility/create";
 import { CreateRequestPersistence } from "@/domain/request";
+import { AssociateToRolePersistence } from "@/domain/responsibility";
 
 export type BetterSqlite3Root = {
     getClient(): Database;
@@ -43,6 +45,7 @@ export type BetterSqlite3AdapterRoot = {
     getCreateRolePersistence(): CreateRolePersistence;
     getCreateResponsibilityPersistence(): CreateResponsibilityPersistence;
     getCreateRequestPersistence(): CreateRequestPersistence;
+    getAssociateToRolePersistence(): AssociateToRolePersistence;
 } & RootInit;
 
 export function makeBetterSqlite3AdapterRoot(
@@ -71,6 +74,9 @@ export function makeBetterSqlite3AdapterRoot(
         ),
         getCreateRequestPersistence: memoize(() =>
             makeCreateRequestPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getAssociateToRolePersistence: memoize(() =>
+            makeAssociateToRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         init,
     };

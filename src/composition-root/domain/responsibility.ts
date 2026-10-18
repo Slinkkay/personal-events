@@ -1,9 +1,16 @@
-import { CreateResponsibility, makeCreateResponsibility } from "@/domain/responsibility";
+import {
+    AssociateToRole,
+    CreateResponsibility,
+    makeAssociateToRole,
+    makeCreateResponsibility,
+} from "@/domain/responsibility";
 import { InfrastructureRoot } from "@/composition-root/infrastructure";
 import { ContextRoot } from "@/composition-root/context";
+import { memoize } from "@/composition-root";
 
 export type ResponsibilityRoot = {
     getCreateResponsibility(): CreateResponsibility;
+    getAssociateToRole(): AssociateToRole;
 };
 
 export function makeResponsibilityRoot(context: ContextRoot, infrastructure: InfrastructureRoot): ResponsibilityRoot {
@@ -14,5 +21,12 @@ export function makeResponsibilityRoot(context: ContextRoot, infrastructure: Inf
                 infrastructure.betterSqlite3Adapter.getCreateResponsibilityPersistence(),
             );
         },
+        getAssociateToRole: memoize(() =>
+            makeAssociateToRole(
+                context.getAppLogger(),
+                infrastructure.betterSqlite3Adapter.getAssociateToRolePersistence(),
+                infrastructure.uuid.getGenerateUUID(),
+            ),
+        ),
     };
 }
