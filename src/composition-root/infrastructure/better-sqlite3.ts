@@ -30,7 +30,9 @@ import {
     AssociateToRolePersistence,
     UpdateResponsibilityDescription,
     UpdateResponsibilityName,
+    UpdateResponsibilityStatus,
 } from "@/domain/responsibility";
+import { makeUpdateResponsibilityStatus } from "@/infrastructure/better-sqlite3/adapter/update-responsibility-status";
 
 export type BetterSqlite3Root = {
     getClient(): Database;
@@ -68,6 +70,7 @@ export type BetterSqlite3AdapterRoot = {
     getUpdateRequestStatus(): UpdateRequestStatus;
     getUpdateResponsibilityName(): UpdateResponsibilityName;
     getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
+    getUpdateResponsibilityStatus(): UpdateResponsibilityStatus;
 } & RootInit;
 
 export function makeBetterSqlite3AdapterRoot(
@@ -117,6 +120,9 @@ export function makeBetterSqlite3AdapterRoot(
         ),
         getUpdateResponsibilityDescription: memoize(() =>
             makeUpdateResponsibilityDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateResponsibilityStatus: memoize(() =>
+            makeUpdateResponsibilityStatus(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         init,
     };
