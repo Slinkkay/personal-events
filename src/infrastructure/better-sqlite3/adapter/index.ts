@@ -6,3 +6,4 @@ export * from "./associate-to-role-persistence";
 export * from "./associate-to-responsibility-persistence";
 export * from "./update-request-description";
 export * from "./update-request-due-date";
+export * from "./update-request-status";
