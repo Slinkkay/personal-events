@@ -9,7 +9,8 @@ const createRoleTableStatement = (table: string) => `
         idx INTEGER PRIMARY KEY AUTOINCREMENT,
         id TEXT NOT NULL,
         name TEXT NOT NULL,
-        description TEXT NOT NULL
+        description TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'OPEN'
     )`;
 
 const createResponsibilityStatement = (table: string) => `

@@ -17,7 +17,7 @@ export type CreateRole = {
 
 export type CreateRolePersistence = {
     getNextRoleId(): Promise<ValueResult<string>>;
-    createRole(command: { roleId: string; name: string; description: string }): Promise<Result>;
+    createRole(command: { roleId: string; name: string; description: string; status: string }): Promise<Result>;
 };
 
 export function makeCreateRole(appLogger: AppLogger, persistence: CreateRolePersistence): CreateRole {
@@ -38,6 +38,7 @@ export function makeCreateRole(appLogger: AppLogger, persistence: CreateRolePers
                 description,
                 name,
                 roleId,
+                status: "OPEN",
             });
 
             if (!isSuccess(createResult)) {

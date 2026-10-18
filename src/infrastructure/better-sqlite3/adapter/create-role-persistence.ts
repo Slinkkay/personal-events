@@ -5,8 +5,8 @@ import { Database } from "better-sqlite3";
 import { AppLogger } from "@/log";
 
 const createRoleInsert = (table: string) => `
-    INSERT INTO ${table} (id, name, description)
-    VALUES (?, ?, ?);
+    INSERT INTO ${table} (id, name, description, status)
+    VALUES (?, ?, ?, ?);
 `;
 
 const findLatestId = (table: string) => `
@@ -21,13 +21,13 @@ export function makeCreateRolePersistence(
     appLogger: AppLogger,
 ): CreateRolePersistence {
     return {
-        createRole: async ({ roleId, name, description }) => {
+        createRole: async ({ roleId, name, description, status }) => {
             try {
-                const roleInsertStatement = db.prepare<[string, string, string]>(
+                const roleInsertStatement = db.prepare<[string, string, string, string]>(
                     createRoleInsert(sqliteConfig.tables.role),
                 );
 
-                roleInsertStatement.run(roleId, name, description);
+                roleInsertStatement.run(roleId, name, description, status);
             } catch (err: any) {
                 appLogger.error({
                     type: "sqlite-role-insert",
