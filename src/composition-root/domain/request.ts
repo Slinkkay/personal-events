@@ -1,6 +1,7 @@
 import {
     AssociateToResponsibility,
     CreateRequest,
+    UpdateRequestDescription,
     makeCreateRequest,
     makeAssociateToResponsibility,
 } from "@/domain/request";
@@ -11,6 +12,7 @@ import { InfrastructureRoot } from "@/composition-root/infrastructure";
 export type RequestRoot = {
     getCreateRequest(): CreateRequest;
     getAssociateToResponsibility(): AssociateToResponsibility;
+    getUpdateRequestDescription(): UpdateRequestDescription;
 };
 
 export function makeRequestRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RequestRoot {
@@ -28,5 +30,6 @@ export function makeRequestRoot(context: ContextRoot, infrastructure: Infrastruc
                 infrastructure.uuid.getGenerateUUID(),
             ),
         ),
+        getUpdateRequestDescription: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestDescription()),
     };
 }
