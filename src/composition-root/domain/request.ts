@@ -1,10 +1,16 @@
-import { CreateRequest, makeCreateRequest } from "@/domain/request";
+import {
+    AssociateToResponsibility,
+    CreateRequest,
+    makeCreateRequest,
+    makeAssociateToResponsibility,
+} from "@/domain/request";
 import { memoize } from "@/composition-root";
 import { ContextRoot } from "@/composition-root/context";
 import { InfrastructureRoot } from "@/composition-root/infrastructure";
 
 export type RequestRoot = {
     getCreateRequest(): CreateRequest;
+    getAssociateToResponsibility(): AssociateToResponsibility;
 };
 
 export function makeRequestRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RequestRoot {
@@ -13,6 +19,13 @@ export function makeRequestRoot(context: ContextRoot, infrastructure: Infrastruc
             makeCreateRequest(
                 context.getAppLogger(),
                 infrastructure.betterSqlite3Adapter.getCreateRequestPersistence(),
+            ),
+        ),
+        getAssociateToResponsibility: memoize(() =>
+            makeAssociateToResponsibility(
+                context.getAppLogger(),
+                infrastructure.betterSqlite3Adapter.getAssociateToResponsibilityPersistence(),
+                infrastructure.uuid.getGenerateUUID(),
             ),
         ),
     };
