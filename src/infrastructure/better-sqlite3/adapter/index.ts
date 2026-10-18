@@ -11,3 +11,4 @@ export * from "./update-responsibility-name";
 export * from "./update-responsibility-description";
 export * from "./update-request-status";
 export * from "./update-role-description";
+export * from "./update-role-name";
