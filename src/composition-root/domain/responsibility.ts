@@ -20,26 +20,24 @@ export type ResponsibilityRoot = {
 };
 
 export function makeResponsibilityRoot(context: ContextRoot, infrastructure: InfrastructureRoot): ResponsibilityRoot {
+    const responsibility = infrastructure.betterSqlite3Adapter.responsibility;
+
     return {
         getCreateResponsibility: () => {
             return makeCreateResponsibility(
                 context.getAppLogger(),
-                infrastructure.betterSqlite3Adapter.getCreateResponsibilityPersistence(),
+                responsibility.getCreateResponsibilityPersistence(),
             );
         },
         getAssociateToRole: memoize(() =>
             makeAssociateToRole(
                 context.getAppLogger(),
-                infrastructure.betterSqlite3Adapter.role.getAssociateToRolePersistence(),
+                responsibility.getAssociateToRolePersistence(),
                 infrastructure.uuid.getGenerateUUID(),
             ),
         ),
-        getUpdateResponsibilityName: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateResponsibilityName()),
-        getUpdateResponsibilityDescription: memoize(() =>
-            infrastructure.betterSqlite3Adapter.getUpdateResponsibilityDescription(),
-        ),
-        getUpdateResponsibilityStatus: memoize(() =>
-            infrastructure.betterSqlite3Adapter.getUpdateResponsibilityStatus(),
-        ),
+        getUpdateResponsibilityName: memoize(() => responsibility.getUpdateResponsibilityName()),
+        getUpdateResponsibilityDescription: memoize(() => responsibility.getUpdateResponsibilityDescription()),
+        getUpdateResponsibilityStatus: memoize(() => responsibility.getUpdateResponsibilityStatus()),
     };
 }

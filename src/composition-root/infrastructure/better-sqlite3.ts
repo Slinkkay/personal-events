@@ -62,26 +62,34 @@ export function makeBetterSqlite3Root(): BetterSqlite3Root {
     };
 }
 
-export type BetterSqlite3AdapterRoot = {
-    getPersistenceInit(): PersistenceInit;
+export type BetterSqlite3Responsibility = {
     getCreateResponsibilityPersistence(): CreateResponsibilityPersistence;
     getUpdateResponsibilityName(): UpdateResponsibilityName;
     getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
     getUpdateResponsibilityStatus(): UpdateResponsibilityStatus;
-    request: {
-        getRequest(): GetRequest;
-        getCreateRequestPersistence(): CreateRequestPersistence;
-        getUpdateRequestDescription(): UpdateRequestDescription;
-        getUpdateRequestDueDate(): UpdateRequestDueDate;
-        getUpdateRequestStatus(): UpdateRequestStatus;
-        getAssociateToResponsibilityPersistence(): AssociateToResponsibilityPersistence;
-    };
-    role: {
-        getCreateRolePersistence(): CreateRolePersistence;
-        getAssociateToRolePersistence(): AssociateToRolePersistence;
-        getUpdateRoleDescription(): UpdateRoleDescription;
-        getUpdateRoleName(): UpdateRoleName;
-    };
+    getAssociateToRolePersistence(): AssociateToRolePersistence;
+} & RootInit;
+
+export type BetterSqlite3Request = {
+    getRequest(): GetRequest;
+    getCreateRequestPersistence(): CreateRequestPersistence;
+    getUpdateRequestDescription(): UpdateRequestDescription;
+    getUpdateRequestDueDate(): UpdateRequestDueDate;
+    getUpdateRequestStatus(): UpdateRequestStatus;
+    getAssociateToResponsibilityPersistence(): AssociateToResponsibilityPersistence;
+};
+
+export type BetterSqlite3Role = {
+    getCreateRolePersistence(): CreateRolePersistence;
+    getUpdateRoleDescription(): UpdateRoleDescription;
+    getUpdateRoleName(): UpdateRoleName;
+};
+
+export type BetterSqlite3AdapterRoot = {
+    getPersistenceInit(): PersistenceInit;
+    responsibility: BetterSqlite3Responsibility;
+    request: BetterSqlite3Request;
+    role: BetterSqlite3Role;
 } & RootInit;
 
 export function makeBetterSqlite3AdapterRoot(
@@ -90,11 +98,14 @@ export function makeBetterSqlite3AdapterRoot(
 ): BetterSqlite3AdapterRoot {
     let sqliteConfig: SqliteConfig;
 
+    const responsibility = makeBetterSqliteResponsibility(contextRoot, root);
+
     const init = async (config: any) => {
         if (!isSqliteConfig(config)) {
             return success();
         }
         sqliteConfig = config;
+        await responsibility.init(config);
         return success();
     };
 
@@ -102,24 +113,9 @@ export function makeBetterSqlite3AdapterRoot(
         getPersistenceInit: memoize(() =>
             makePersistenceInit(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
-        getCreateResponsibilityPersistence: memoize(() =>
-            makeCreateResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateResponsibilityName: memoize(() =>
-            makeUpdateResponsibilityName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateResponsibilityDescription: memoize(() =>
-            makeUpdateResponsibilityDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateResponsibilityStatus: memoize(() =>
-            makeUpdateResponsibilityStatus(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
         role: {
             getCreateRolePersistence: memoize(() =>
                 makeCreateRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-            ),
-            getAssociateToRolePersistence: memoize(() =>
-                makeAssociateToRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
             ),
             getUpdateRoleDescription: memoize(() =>
                 makeUpdateRoleDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
@@ -128,6 +124,7 @@ export function makeBetterSqlite3AdapterRoot(
                 makeUpdateRoleName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
             ),
         },
+        responsibility,
         request: {
             getRequest: memoize(() => makeGetRequest(root.getClient(), sqliteConfig, contextRoot.getAppLogger())),
             getCreateRequestPersistence: memoize(() =>
@@ -146,6 +143,40 @@ export function makeBetterSqlite3AdapterRoot(
                 makeAssociateToResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
             ),
         },
+        init,
+    };
+}
+
+export function makeBetterSqliteResponsibility(
+    contextRoot: ContextRoot,
+    root: BetterSqlite3Root,
+): BetterSqlite3Responsibility {
+    let sqliteConfig: SqliteConfig;
+
+    const init = async (config: any) => {
+        if (!isSqliteConfig(config)) {
+            return success();
+        }
+        sqliteConfig = config;
+        return success();
+    };
+
+    return {
+        getCreateResponsibilityPersistence: memoize(() =>
+            makeCreateResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateResponsibilityName: memoize(() =>
+            makeUpdateResponsibilityName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateResponsibilityDescription: memoize(() =>
+            makeUpdateResponsibilityDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateResponsibilityStatus: memoize(() =>
+            makeUpdateResponsibilityStatus(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getAssociateToRolePersistence: memoize(() =>
+            makeAssociateToRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
         init,
     };
 }
