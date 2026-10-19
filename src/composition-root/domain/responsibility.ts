@@ -30,7 +30,7 @@ export function makeResponsibilityRoot(context: ContextRoot, infrastructure: Inf
         getAssociateToRole: memoize(() =>
             makeAssociateToRole(
                 context.getAppLogger(),
-                infrastructure.betterSqlite3Adapter.getAssociateToRolePersistence(),
+                infrastructure.betterSqlite3Adapter.role.getAssociateToRolePersistence(),
                 infrastructure.uuid.getGenerateUUID(),
             ),
         ),

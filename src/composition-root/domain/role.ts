@@ -10,11 +10,11 @@ export type RoleRoot = {
 };
 
 export function makeRoleRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RoleRoot {
-    const sqliteAdapter = infrastructure.betterSqlite3Adapter;
+    const role = infrastructure.betterSqlite3Adapter.role;
 
     return {
-        getCreateRole: memoize(() => makeCreateRole(context.getAppLogger(), sqliteAdapter.getCreateRolePersistence())),
-        getUpdateRoleDescription: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRoleDescription()),
-        getUpdateRoleName: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRoleName()),
+        getCreateRole: memoize(() => makeCreateRole(context.getAppLogger(), role.getCreateRolePersistence())),
+        getUpdateRoleDescription: memoize(() => role.getUpdateRoleDescription()),
+        getUpdateRoleName: memoize(() => role.getUpdateRoleName()),
     };
 }
