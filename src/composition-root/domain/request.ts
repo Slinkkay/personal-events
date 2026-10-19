@@ -22,23 +22,22 @@ export type RequestRoot = {
 };
 
 export function makeRequestRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RequestRoot {
+    const request = infrastructure.betterSqlite3Adapter.request;
+
     return {
         getCreateRequest: memoize(() =>
-            makeCreateRequest(
-                context.getAppLogger(),
-                infrastructure.betterSqlite3Adapter.getCreateRequestPersistence(),
-            ),
+            makeCreateRequest(context.getAppLogger(), request.getCreateRequestPersistence()),
         ),
         getAssociateToResponsibility: memoize(() =>
             makeAssociateToResponsibility(
                 context.getAppLogger(),
-                infrastructure.betterSqlite3Adapter.getAssociateToResponsibilityPersistence(),
+                request.getAssociateToResponsibilityPersistence(),
                 infrastructure.uuid.getGenerateUUID(),
             ),
         ),
-        getUpdateRequestDescription: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestDescription()),
-        getUpdateRequestDueDate: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestDueDate()),
-        getUpdateRequestStatus: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestStatus()),
-        getGetRequest: memoize(() => infrastructure.betterSqlite3Adapter.request.getRequest()),
+        getUpdateRequestDescription: memoize(() => request.getUpdateRequestDescription()),
+        getUpdateRequestDueDate: memoize(() => request.getUpdateRequestDueDate()),
+        getUpdateRequestStatus: memoize(() => request.getUpdateRequestStatus()),
+        getGetRequest: memoize(() => request.getRequest()),
     };
 }

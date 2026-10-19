@@ -66,12 +66,7 @@ export type BetterSqlite3AdapterRoot = {
     getPersistenceInit(): PersistenceInit;
     getCreateRolePersistence(): CreateRolePersistence;
     getCreateResponsibilityPersistence(): CreateResponsibilityPersistence;
-    getCreateRequestPersistence(): CreateRequestPersistence;
     getAssociateToRolePersistence(): AssociateToRolePersistence;
-    getAssociateToResponsibilityPersistence(): AssociateToResponsibilityPersistence;
-    getUpdateRequestDescription(): UpdateRequestDescription;
-    getUpdateRequestDueDate(): UpdateRequestDueDate;
-    getUpdateRequestStatus(): UpdateRequestStatus;
     getUpdateResponsibilityName(): UpdateResponsibilityName;
     getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
     getUpdateResponsibilityStatus(): UpdateResponsibilityStatus;
@@ -79,6 +74,11 @@ export type BetterSqlite3AdapterRoot = {
     getUpdateRoleName(): UpdateRoleName;
     request: {
         getRequest(): GetRequest;
+        getCreateRequestPersistence(): CreateRequestPersistence;
+        getUpdateRequestDescription(): UpdateRequestDescription;
+        getUpdateRequestDueDate(): UpdateRequestDueDate;
+        getUpdateRequestStatus(): UpdateRequestStatus;
+        getAssociateToResponsibilityPersistence(): AssociateToResponsibilityPersistence;
     };
 } & RootInit;
 
@@ -106,23 +106,8 @@ export function makeBetterSqlite3AdapterRoot(
         getCreateResponsibilityPersistence: memoize(() =>
             makeCreateResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
-        getCreateRequestPersistence: memoize(() =>
-            makeCreateRequestPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
         getAssociateToRolePersistence: memoize(() =>
             makeAssociateToRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getAssociateToResponsibilityPersistence: memoize(() =>
-            makeAssociateToResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateRequestDescription: memoize(() =>
-            makeUpdateRequestDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateRequestDueDate: memoize(() =>
-            makeUpdateRequestDueDate(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-        ),
-        getUpdateRequestStatus: memoize(() =>
-            makeUpdateRequestStatus(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         getUpdateResponsibilityName: memoize(() =>
             makeUpdateResponsibilityName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
@@ -141,6 +126,21 @@ export function makeBetterSqlite3AdapterRoot(
         ),
         request: {
             getRequest: memoize(() => makeGetRequest(root.getClient(), sqliteConfig, contextRoot.getAppLogger())),
+            getCreateRequestPersistence: memoize(() =>
+                makeCreateRequestPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+            ),
+            getUpdateRequestDescription: memoize(() =>
+                makeUpdateRequestDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+            ),
+            getUpdateRequestDueDate: memoize(() =>
+                makeUpdateRequestDueDate(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+            ),
+            getUpdateRequestStatus: memoize(() =>
+                makeUpdateRequestStatus(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+            ),
+            getAssociateToResponsibilityPersistence: memoize(() =>
+                makeAssociateToResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+            ),
         },
         init,
     };
