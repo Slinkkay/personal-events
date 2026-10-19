@@ -1,4 +1,4 @@
-import { Result, success } from "@/result";
+import { isSuccess, Result, success } from "@/result";
 import { CompositionRoot } from "@/composition-root";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
@@ -14,14 +14,28 @@ export function makeStartWebGraphQL(root: CompositionRoot): StartWebGraphQL {
                 const schema = createSchema({
                     typeDefs: `
                 type Query {
-                    hello: String
+                    request(id: String): Request
+                }
+                
+                type Request {
+                    id: String
+                    description: String
+                    dueDate: String
+                    status: String
                 }
             `,
                     resolvers: {
                         Query: {
-                            hello: () => {
-                                console.log("Hello World");
-                                return "World";
+                            request: async (_: unknown, { id }: { id: string }) => {
+                                const getRequest = root.domain.request.getGetRequest();
+
+                                const getResult = await getRequest.get({ id });
+
+                                if (!isSuccess(getResult)) {
+                                    throw new Error("Request failed with id " + id);
+                                }
+
+                                return getResult.value;
                             },
                         },
                     },

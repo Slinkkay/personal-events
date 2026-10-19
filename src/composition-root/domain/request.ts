@@ -6,6 +6,7 @@ import {
     makeAssociateToResponsibility,
     UpdateRequestDueDate,
     UpdateRequestStatus,
+    GetRequest,
 } from "@/domain/request";
 import { memoize } from "@/composition-root";
 import { ContextRoot } from "@/composition-root/context";
@@ -17,6 +18,7 @@ export type RequestRoot = {
     getUpdateRequestDescription(): UpdateRequestDescription;
     getUpdateRequestDueDate(): UpdateRequestDueDate;
     getUpdateRequestStatus(): UpdateRequestStatus;
+    getGetRequest(): GetRequest;
 };
 
 export function makeRequestRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RequestRoot {
@@ -37,5 +39,6 @@ export function makeRequestRoot(context: ContextRoot, infrastructure: Infrastruc
         getUpdateRequestDescription: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestDescription()),
         getUpdateRequestDueDate: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestDueDate()),
         getUpdateRequestStatus: memoize(() => infrastructure.betterSqlite3Adapter.getUpdateRequestStatus()),
+        getGetRequest: memoize(() => infrastructure.betterSqlite3Adapter.request.getRequest()),
     };
 }
