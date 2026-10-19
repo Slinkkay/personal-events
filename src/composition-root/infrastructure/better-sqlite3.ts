@@ -102,6 +102,8 @@ export function makeBetterSqlite3AdapterRoot(
 
     const request = makeBetterSqliteRequest(contextRoot, root);
 
+    const role = makeBetterSqliteRole(contextRoot, root);
+
     const init = async (config: any) => {
         if (!isSqliteConfig(config)) {
             return success();
@@ -109,6 +111,7 @@ export function makeBetterSqlite3AdapterRoot(
         sqliteConfig = config;
         await responsibility.init(config);
         await request.init(config);
+        await role.init(config);
         return success();
     };
 
@@ -116,17 +119,7 @@ export function makeBetterSqlite3AdapterRoot(
         getPersistenceInit: memoize(() =>
             makePersistenceInit(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
-        role: {
-            getCreateRolePersistence: memoize(() =>
-                makeCreateRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-            ),
-            getUpdateRoleDescription: memoize(() =>
-                makeUpdateRoleDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-            ),
-            getUpdateRoleName: memoize(() =>
-                makeUpdateRoleName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
-            ),
-        },
+        role,
         responsibility,
         request,
         init,
@@ -194,6 +187,31 @@ export function makeBetterSqliteResponsibility(
         ),
         getAssociateToRolePersistence: memoize(() =>
             makeAssociateToRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        init,
+    };
+}
+
+export function makeBetterSqliteRole(contextRoot: ContextRoot, root: BetterSqlite3Root) {
+    let sqliteConfig: SqliteConfig;
+
+    const init = async (config: any) => {
+        if (!isSqliteConfig(config)) {
+            return success();
+        }
+        sqliteConfig = config;
+        return success();
+    };
+
+    return {
+        getCreateRolePersistence: memoize(() =>
+            makeCreateRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateRoleDescription: memoize(() =>
+            makeUpdateRoleDescription(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getUpdateRoleName: memoize(() =>
+            makeUpdateRoleName(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         init,
     };
