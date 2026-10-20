@@ -7,7 +7,7 @@ export type CreateResponsibilityCommand = {
 };
 
 export type CreateResponsibility = {
-    create(command: CreateResponsibilityCommand): Promise<Result>;
+    create(command: CreateResponsibilityCommand): Promise<ValueResult<string>>;
 };
 
 export type CreateResponsibilityPersistenceCommand = {
@@ -51,7 +51,7 @@ export function makeCreateResponsibility(
                 });
                 return failure();
             }
-            return success();
+            return success(id);
         },
     };
 }

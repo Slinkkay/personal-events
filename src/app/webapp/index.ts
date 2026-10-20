@@ -9,7 +9,7 @@ initWebServerCompositionRoot(root).then(async (result) => {
         throw new Error("Failed to init Web Server Composition Root");
     }
 
-    const webServerStart = root.infrastructure.graphQL.getStartWebGraphQL();
+    const webServerStart = root.getStartServer();
 
     try {
         await webServerStart.start();

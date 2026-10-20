@@ -1,21 +1,30 @@
 import { CompositionRoot, makeCompositionRoot, memoize } from "@/composition-root";
 import { Result, success } from "@/result";
 import { initSqliteConfig } from "@/app/common";
-import { makeWebAppInfrastructure, WebAppInfrastructure } from "@/app/webapp/infrastructure";
+import { GraphQLRootAdapter, makeGraphQLRootAdapter } from "./infrastructure";
+import { makeStartServer, StartServer } from "@/app/webapp/domain/start-server";
 
 export type WebServerCompositionRoot = {
     root: CompositionRoot;
-    infrastructure: WebAppInfrastructure;
+    graphQLAdapter: GraphQLRootAdapter;
+    getStartServer(): StartServer;
 };
 
 export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
     const root = makeCompositionRoot();
 
-    const infrastructure = makeWebAppInfrastructure(root);
+    const graphQLAdapter = makeGraphQLRootAdapter();
 
     return {
         root,
-        infrastructure,
+        graphQLAdapter,
+        getStartServer: memoize(() =>
+            makeStartServer(
+                graphQLAdapter.getRegisterAndListen(),
+                root.domain.request.getCreateRequest(),
+                root.domain.request.getGetRequest(),
+            ),
+        ),
     };
 }
 
