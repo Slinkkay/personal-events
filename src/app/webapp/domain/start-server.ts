@@ -1,36 +1,16 @@
-import { Result, ValueResult } from "@/result";
-import { CreateRequest, GetRequest, Request } from "@/domain/request";
+import { isSuccess } from "@/result";
+import { CreateRequest, GetRequest } from "@/domain/request";
+import { createSchema, createYoga } from "graphql-yoga";
+import { createServer } from "node:http";
 
 export type StartServer = {
     start(): Promise<void>;
 };
 
-export type RegisterAndListen = {
-    register(
-        typeDefs: string,
-        resolver: {
-            request: {
-                getRequest: {
-                    get: (command: { id: string }) => Promise<ValueResult<Request>>;
-                };
-                createRequest: {
-                    create: (command: { dueDate: string; description: string }) => Promise<ValueResult<string>>;
-                };
-            };
-        },
-    ): void;
-    listen(): Promise<Result>;
-};
-
-export function makeStartServer(
-    register: RegisterAndListen,
-    createRequest: CreateRequest,
-    getRequest: GetRequest,
-): StartServer {
+export function makeStartServer(createRequest: CreateRequest, getRequest: GetRequest): StartServer {
     return {
-        start: async () => {
-            register.register(
-                `
+        start: () => {
+            const typeDefs = `
                 type Query {
                     request(id: String): Request
                 }
@@ -49,16 +29,53 @@ export function makeStartServer(
                 type Mutation {
                     createRequest(dueDate: String, description: String): IdResult!
                 }
-            `,
-                {
-                    request: {
-                        createRequest,
-                        getRequest,
+            `;
+
+            const resolvers = {
+                Query: {
+                    request: async (_: unknown, command: any) => {
+                        const result = await getRequest.get(command);
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get request");
+                        }
+                        return result.value;
                     },
                 },
-            );
+                Mutation: {
+                    createRequest: async (_: unknown, command: any) => {
+                        const result = await createRequest.create(command);
 
-            await register.listen();
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to create request");
+                        }
+
+                        return { id: result.value };
+                    },
+                },
+            };
+
+            let schema = createSchema({
+                typeDefs,
+                resolvers,
+            });
+            const yoga = createYoga({
+                schema,
+            });
+
+            const server = createServer(yoga);
+
+            return new Promise((resolve, reject) => {
+                server.listen(3000, () => {
+                    console.log("Server started on port 3000.");
+                });
+
+                server.on("error", (err) => {
+                    reject(err);
+                });
+                server.on("close", () => {
+                    resolve();
+                });
+            });
         },
     };
 }
