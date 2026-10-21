@@ -1,6 +1,7 @@
 import {
     AssociateToRole,
     CreateResponsibility,
+    GetResponsibility,
     makeAssociateToRole,
     makeCreateResponsibility,
     UpdateResponsibilityDescription,
@@ -17,6 +18,7 @@ export type ResponsibilityRoot = {
     getUpdateResponsibilityName(): UpdateResponsibilityName;
     getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
     getUpdateResponsibilityStatus(): UpdateResponsibilityStatus;
+    getGetResponsibility(): GetResponsibility;
 };
 
 export function makeResponsibilityRoot(context: ContextRoot, infrastructure: InfrastructureRoot): ResponsibilityRoot {
@@ -39,5 +41,6 @@ export function makeResponsibilityRoot(context: ContextRoot, infrastructure: Inf
         getUpdateResponsibilityName: memoize(() => responsibility.getUpdateResponsibilityName()),
         getUpdateResponsibilityDescription: memoize(() => responsibility.getUpdateResponsibilityDescription()),
         getUpdateResponsibilityStatus: memoize(() => responsibility.getUpdateResponsibilityStatus()),
+        getGetResponsibility: memoize(() => responsibility.getResponsibility()),
     };
 }
