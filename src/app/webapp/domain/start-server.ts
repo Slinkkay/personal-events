@@ -1,5 +1,6 @@
 import { isSuccess } from "@/result";
 import { CreateRequest, GetRequest } from "@/domain/request";
+import { GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
 
@@ -7,18 +8,26 @@ export type StartServer = {
     start(): Promise<void>;
 };
 
-export function makeStartServer(createRequest: CreateRequest, getRequest: GetRequest): StartServer {
+export function makeStartServer(createRequest: CreateRequest, getRequest: GetRequest, getRole: GetRole): StartServer {
     return {
         start: () => {
             const typeDefs = `
                 type Query {
                     request(id: String): Request
+                    role(id: String): Role
                 }
                 
                 type Request {
                     id: String
                     description: String
                     dueDate: String
+                    status: String
+                }
+
+                type Role {
+                    id: String
+                    name: String
+                    description: String
                     status: String
                 }
                 
@@ -37,6 +46,13 @@ export function makeStartServer(createRequest: CreateRequest, getRequest: GetReq
                         const result = await getRequest.get(command);
                         if (!isSuccess(result)) {
                             throw new Error("Failed to get request");
+                        }
+                        return result.value;
+                    },
+                    role: async (_: unknown, command: any) => {
+                        const result = await getRole.get(command);
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get role");
                         }
                         return result.value;
                     },

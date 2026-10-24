@@ -14,7 +14,11 @@ export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
     return {
         root,
         getStartServer: memoize(() =>
-            makeStartServer(root.domain.request.getCreateRequest(), root.domain.request.getGetRequest()),
+            makeStartServer(
+                root.domain.request.getCreateRequest(),
+                root.domain.request.getGetRequest(),
+                root.domain.role.getGetRole(),
+            ),
         ),
     };
 }
