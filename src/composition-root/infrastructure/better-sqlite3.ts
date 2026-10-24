@@ -17,6 +17,7 @@ import {
     makeUpdateResponsibilityDescription,
     makeUpdateRoleDescription,
     makeUpdateRoleName,
+    makeUpdateResponsibilityStatus,
 } from "@/infrastructure/better-sqlite3/adapter";
 import { ContextRoot } from "@/composition-root/context";
 import { CreateRolePersistence, GetRole, UpdateRoleDescription, UpdateRoleName } from "@/domain/role";
@@ -36,7 +37,6 @@ import {
     UpdateResponsibilityName,
     UpdateResponsibilityStatus,
 } from "@/domain/responsibility";
-import { makeUpdateResponsibilityStatus } from "@/infrastructure/better-sqlite3/adapter/update-responsibility-status";
 import { makeGetRequest } from "@/infrastructure/better-sqlite3/adapter/request";
 import { makeGetResponsibility } from "@/infrastructure/better-sqlite3/adapter/responsibility";
 import { makeGetRole } from "@/infrastructure/better-sqlite3/adapter/role";
