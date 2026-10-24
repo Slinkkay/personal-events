@@ -20,7 +20,7 @@ import {
     makeUpdateResponsibilityStatus,
 } from "@/infrastructure/better-sqlite3/adapter";
 import { ContextRoot } from "@/composition-root/context";
-import { CreateRolePersistence, GetRole, UpdateRoleDescription, UpdateRoleName } from "@/domain/role";
+import { CreateRolePersistence, GetAllRoles, GetRole, UpdateRoleDescription, UpdateRoleName } from "@/domain/role";
 import { CreateResponsibilityPersistence } from "@/domain/responsibility/create";
 import {
     AssociateToResponsibilityPersistence,
@@ -39,7 +39,7 @@ import {
 } from "@/domain/responsibility";
 import { makeGetRequest } from "@/infrastructure/better-sqlite3/adapter/request";
 import { makeGetResponsibility } from "@/infrastructure/better-sqlite3/adapter/responsibility";
-import { makeGetRole } from "@/infrastructure/better-sqlite3/adapter/role";
+import { makeGetAllRoles, makeGetRole } from "@/infrastructure/better-sqlite3/adapter/role";
 
 export type BetterSqlite3Root = {
     getClient(): Database;
@@ -85,6 +85,7 @@ export type BetterSqlite3Request = {
 
 export type BetterSqlite3Role = {
     getRole(): GetRole;
+    getGetAllRoles(): GetAllRoles;
     getCreateRolePersistence(): CreateRolePersistence;
     getUpdateRoleDescription(): UpdateRoleDescription;
     getUpdateRoleName(): UpdateRoleName;
@@ -200,7 +201,7 @@ export function makeBetterSqliteResponsibility(
     };
 }
 
-export function makeBetterSqliteRole(contextRoot: ContextRoot, root: BetterSqlite3Root) {
+export function makeBetterSqliteRole(contextRoot: ContextRoot, root: BetterSqlite3Root): BetterSqlite3Role {
     let sqliteConfig: SqliteConfig;
 
     const init = async (config: any) => {
@@ -213,6 +214,7 @@ export function makeBetterSqliteRole(contextRoot: ContextRoot, root: BetterSqlit
 
     return {
         getRole: memoize(() => makeGetRole(root.getClient(), sqliteConfig, contextRoot.getAppLogger())),
+        getGetAllRoles: memoize(() => makeGetAllRoles(root.getClient(), sqliteConfig, contextRoot.getAppLogger())),
         getCreateRolePersistence: memoize(() =>
             makeCreateRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
