@@ -1,6 +1,7 @@
 import {
     AssociateToResponsibility,
     CreateRequest,
+    GetAllRequests,
     UpdateRequestDescription,
     makeCreateRequest,
     makeAssociateToResponsibility,
@@ -19,6 +20,7 @@ export type RequestRoot = {
     getUpdateRequestDueDate(): UpdateRequestDueDate;
     getUpdateRequestStatus(): UpdateRequestStatus;
     getGetRequest(): GetRequest;
+    getGetAllRequests(): GetAllRequests;
 };
 
 export function makeRequestRoot(context: ContextRoot, infrastructure: InfrastructureRoot): RequestRoot {
@@ -39,5 +41,6 @@ export function makeRequestRoot(context: ContextRoot, infrastructure: Infrastruc
         getUpdateRequestDueDate: memoize(() => request.getUpdateRequestDueDate()),
         getUpdateRequestStatus: memoize(() => request.getUpdateRequestStatus()),
         getGetRequest: memoize(() => request.getRequest()),
+        getGetAllRequests: memoize(() => request.getGetAllRequests()),
     };
 }
