@@ -18,6 +18,7 @@ import {
     makeUpdateRoleDescription,
     makeUpdateRoleName,
     makeUpdateResponsibilityStatus,
+    makeGetResponsibilityFromRolePersistence,
 } from "@/infrastructure/better-sqlite3/adapter";
 import { ContextRoot } from "@/composition-root/context";
 import { CreateRolePersistence, GetAllRoles, GetRole, UpdateRoleDescription, UpdateRoleName } from "@/domain/role";
@@ -33,6 +34,7 @@ import {
 } from "@/domain/request";
 import {
     AssociateToRolePersistence,
+    ResponsibilityFromRolePersistence,
     GetResponsibility,
     UpdateResponsibilityDescription,
     UpdateResponsibilityName,
@@ -68,6 +70,7 @@ export function makeBetterSqlite3Root(): BetterSqlite3Root {
 
 export type BetterSqlite3Responsibility = {
     getResponsibility(): GetResponsibility;
+    getResponsibilityFromRolePersistence(): ResponsibilityFromRolePersistence;
     getCreateResponsibilityPersistence(): CreateResponsibilityPersistence;
     getUpdateResponsibilityName(): UpdateResponsibilityName;
     getUpdateResponsibilityDescription(): UpdateResponsibilityDescription;
@@ -183,9 +186,14 @@ export function makeBetterSqliteResponsibility(
         return success();
     };
 
+    const getResponsibility = memoize(() =>
+        makeGetResponsibility(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+    );
+
     return {
-        getResponsibility: memoize(() =>
-            makeGetResponsibility(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        getResponsibility,
+        getResponsibilityFromRolePersistence: memoize(() =>
+            makeGetResponsibilityFromRolePersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         getCreateResponsibilityPersistence: memoize(() =>
             makeCreateResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),

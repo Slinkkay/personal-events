@@ -9,6 +9,7 @@ export * from "./request/update-request-due-date";
 export * from "./request/update-request-status";
 export * from "./responsibility/update-responsibility-name";
 export * from "./responsibility/update-responsibility-description";
+export * from "./responsibility/get-responsibility-from-role";
 export * from "./request/update-request-status";
 export * from "./role/update-role-description";
 export * from "./role/update-role-name";
