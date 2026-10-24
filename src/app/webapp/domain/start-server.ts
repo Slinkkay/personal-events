@@ -3,7 +3,7 @@ import { CreateRequest, GetRequest } from "@/domain/request";
 import { CreateRole, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
-import { CreateResponsibility, GetResponsibility } from "@/domain/responsibility";
+import { CreateResponsibility, GetResponsibility, GetResponsibilityFromRole } from "@/domain/responsibility";
 
 export type StartServer = {
     start(): Promise<void>;
@@ -14,6 +14,7 @@ export function makeStartServer(
     getRequest: GetRequest,
     createResponsibility: CreateResponsibility,
     getResponsibility: GetResponsibility,
+    getResponsibilityFromRole: GetResponsibilityFromRole,
     createRole: CreateRole,
     getRole: GetRole,
 ): StartServer {
@@ -38,6 +39,7 @@ export function makeStartServer(
                     name: String
                     description: String
                     status: String
+                    responsibilities: [Responsibility]
                 }
                 
                 type Responsibility {
@@ -79,6 +81,18 @@ export function makeStartServer(
                         const result = await getRole.get(command);
                         if (!isSuccess(result)) {
                             throw new Error("Failed to get role");
+                        }
+                        return result.value;
+                    },
+                },
+                Role: {
+                    responsibilities: async (parent: { id: string }) => {
+                        const result = await getResponsibilityFromRole.get({
+                            roleId: parent.id,
+                        });
+
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get responsibility from role");
                         }
                         return result.value;
                     },
@@ -127,6 +141,9 @@ export function makeStartServer(
                 resolvers,
             });
             const yoga = createYoga({
+                cors: {
+                    origin: "*",
+                },
                 schema,
             });
 
