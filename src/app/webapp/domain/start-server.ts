@@ -3,6 +3,7 @@ import { CreateRequest, GetRequest } from "@/domain/request";
 import { CreateRole, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
+import { CreateResponsibility } from "@/domain/responsibility";
 
 export type StartServer = {
     start(): Promise<void>;
@@ -11,6 +12,7 @@ export type StartServer = {
 export function makeStartServer(
     createRequest: CreateRequest,
     getRequest: GetRequest,
+    createResponsibility: CreateResponsibility,
     createRole: CreateRole,
     getRole: GetRole,
 ): StartServer {
@@ -42,6 +44,7 @@ export function makeStartServer(
                 
                 type Mutation {
                     createRequest(dueDate: String, description: String): IdResult!
+                    createResponsibility(name: String, description: String): IdResult! 
                     createRole(name: String, description: String): IdResult!
                 }
             `;
@@ -82,6 +85,21 @@ export function makeStartServer(
                         if (!isSuccess(result)) {
                             throw new Error("Failed to create role");
                         }
+                        return { id: result.value };
+                    },
+                    createResponsibility: async (
+                        _: unknown,
+                        { description, name }: { description: string; name: string },
+                    ) => {
+                        const result = await createResponsibility.create({
+                            name,
+                            description,
+                        });
+
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to create responsibility");
+                        }
+
                         return { id: result.value };
                     },
                 },
