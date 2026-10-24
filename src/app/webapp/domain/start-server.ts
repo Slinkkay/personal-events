@@ -3,7 +3,7 @@ import { CreateRequest, GetRequest } from "@/domain/request";
 import { CreateRole, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
-import { CreateResponsibility } from "@/domain/responsibility";
+import { CreateResponsibility, GetResponsibility } from "@/domain/responsibility";
 
 export type StartServer = {
     start(): Promise<void>;
@@ -13,6 +13,7 @@ export function makeStartServer(
     createRequest: CreateRequest,
     getRequest: GetRequest,
     createResponsibility: CreateResponsibility,
+    getResponsibility: GetResponsibility,
     createRole: CreateRole,
     getRole: GetRole,
 ): StartServer {
@@ -21,6 +22,7 @@ export function makeStartServer(
             const typeDefs = `
                 type Query {
                     request(id: String): Request
+                    responsibility(id: String): Responsibility
                     role(id: String): Role
                 }
                 
@@ -32,6 +34,13 @@ export function makeStartServer(
                 }
 
                 type Role {
+                    id: String
+                    name: String
+                    description: String
+                    status: String
+                }
+                
+                type Responsibility {
                     id: String
                     name: String
                     description: String
@@ -51,11 +60,19 @@ export function makeStartServer(
 
             const resolvers = {
                 Query: {
-                    request: async (_: unknown, command: any) => {
-                        const result = await getRequest.get(command);
+                    request: async (_: unknown, { id }: { id: string }) => {
+                        const result = await getRequest.get({ id });
                         if (!isSuccess(result)) {
                             throw new Error("Failed to get request");
                         }
+                        return result.value;
+                    },
+                    responsibility: async (_: unknown, { id }: { id: string }) => {
+                        const result = await getResponsibility.get({ id });
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get responsibility");
+                        }
+
                         return result.value;
                     },
                     role: async (_: unknown, command: any) => {

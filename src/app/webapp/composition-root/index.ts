@@ -18,6 +18,7 @@ export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
                 root.domain.request.getCreateRequest(),
                 root.domain.request.getGetRequest(),
                 root.domain.responsibility.getCreateResponsibility(),
+                root.domain.responsibility.getGetResponsibility(),
                 root.domain.role.getCreateRole(),
                 root.domain.role.getGetRole(),
             ),
