@@ -40,9 +40,14 @@ import {
     UpdateResponsibilityName,
     UpdateResponsibilityStatus,
 } from "@/domain/responsibility";
-import { makeGetAllRequests, makeGetRequest } from "@/infrastructure/better-sqlite3/adapter/request";
+import {
+    makeGetAllRequests,
+    makeGetRequest,
+    makeGetFromResponsibilityPersistence,
+} from "@/infrastructure/better-sqlite3/adapter/request";
 import { makeGetResponsibility } from "@/infrastructure/better-sqlite3/adapter/responsibility";
 import { makeGetAllRoles, makeGetRole } from "@/infrastructure/better-sqlite3/adapter/role";
+import { GetFromResponsibilityPersistence } from "@/domain/request/get-from-responsibility";
 
 export type BetterSqlite3Root = {
     getClient(): Database;
@@ -81,6 +86,7 @@ export type BetterSqlite3Responsibility = {
 export type BetterSqlite3Request = {
     getRequest(): GetRequest;
     getGetAllRequests(): GetAllRequests;
+    getGetFromResponsibilityPersistence(): GetFromResponsibilityPersistence;
     getCreateRequestPersistence(): CreateRequestPersistence;
     getUpdateRequestDescription(): UpdateRequestDescription;
     getUpdateRequestDueDate(): UpdateRequestDueDate;
@@ -152,6 +158,9 @@ export function makeBetterSqliteRequest(contextRoot: ContextRoot, root: BetterSq
         getRequest: memoize(() => makeGetRequest(root.getClient(), sqliteConfig, contextRoot.getAppLogger())),
         getGetAllRequests: memoize(() =>
             makeGetAllRequests(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
+        ),
+        getGetFromResponsibilityPersistence: memoize(() =>
+            makeGetFromResponsibilityPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),
         ),
         getCreateRequestPersistence: memoize(() =>
             makeCreateRequestPersistence(root.getClient(), sqliteConfig, contextRoot.getAppLogger()),

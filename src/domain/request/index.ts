@@ -5,6 +5,7 @@ export * from "./update-due-date";
 export * from "./update-status";
 export * from "./get";
 export * from "./get-all";
+export * from "./get-from-responsibility";
 
 export type Request = {
     id: string;
