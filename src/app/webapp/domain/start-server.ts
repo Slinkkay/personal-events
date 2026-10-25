@@ -1,5 +1,5 @@
 import { isSuccess } from "@/result";
-import { CreateRequest, GetFromResponsibility, GetRequest } from "@/domain/request";
+import { CreateRequest, GetAllRequests, GetFromResponsibility, GetRequest } from "@/domain/request";
 import { CreateRole, GetAllRoles, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
@@ -12,6 +12,7 @@ export type StartServer = {
 export function makeStartServer(
     createRequest: CreateRequest,
     getRequest: GetRequest,
+    getAllRequests: GetAllRequests,
     getFromResponsibility: GetFromResponsibility,
     createResponsibility: CreateResponsibility,
     getResponsibility: GetResponsibility,
@@ -28,6 +29,7 @@ export function makeStartServer(
                     responsibility(id: String): Responsibility
                     role(id: String): Role
                     roles: [Role]
+                    requests: [Request]
                 }
                 
                 type Request {
@@ -92,6 +94,13 @@ export function makeStartServer(
                         const result = await getAllRoles.getAll();
                         if (!isSuccess(result)) {
                             throw new Error("Failed to get all roles");
+                        }
+                        return result.value;
+                    },
+                    requests: async () => {
+                        const result = await getAllRequests.getAll();
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get all requests");
                         }
                         return result.value;
                     },
