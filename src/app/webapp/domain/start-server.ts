@@ -1,5 +1,5 @@
 import { isSuccess } from "@/result";
-import { CreateRequest, GetRequest } from "@/domain/request";
+import { CreateRequest, GetFromResponsibility, GetRequest } from "@/domain/request";
 import { CreateRole, GetAllRoles, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
@@ -12,6 +12,7 @@ export type StartServer = {
 export function makeStartServer(
     createRequest: CreateRequest,
     getRequest: GetRequest,
+    getFromResponsibility: GetFromResponsibility,
     createResponsibility: CreateResponsibility,
     getResponsibility: GetResponsibility,
     getResponsibilityFromRole: GetResponsibilityFromRole,
@@ -49,6 +50,7 @@ export function makeStartServer(
                     name: String
                     description: String
                     status: String
+                    requests: [Request]
                 }
                 
                 type IdResult {
@@ -102,6 +104,18 @@ export function makeStartServer(
 
                         if (!isSuccess(result)) {
                             throw new Error("Failed to get responsibility from role");
+                        }
+                        return result.value;
+                    },
+                },
+                Responsibility: {
+                    requests: async (parent: { id: string }) => {
+                        const result = await getFromResponsibility.get({
+                            responsibilityId: parent.id,
+                        });
+
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to get request from responsibility");
                         }
                         return result.value;
                     },
