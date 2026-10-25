@@ -26,6 +26,7 @@ export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
                 root.domain.role.getGetRole(),
                 root.domain.role.getGetAllRoles(),
                 root.domain.responsibility.getAssociateToRole(),
+                root.domain.request.getAssociateToResponsibility(),
             ),
         ),
     };

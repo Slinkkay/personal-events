@@ -1,5 +1,11 @@
 import { isSuccess } from "@/result";
-import { CreateRequest, GetAllRequests, GetFromResponsibility, GetRequest } from "@/domain/request";
+import {
+    AssociateToResponsibility,
+    CreateRequest,
+    GetAllRequests,
+    GetFromResponsibility,
+    GetRequest,
+} from "@/domain/request";
 import { CreateRole, GetAllRoles, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
@@ -26,6 +32,7 @@ export function makeStartServer(
     getRole: GetRole,
     getAllRoles: GetAllRoles,
     associateToRole: AssociateToRole,
+    associateToResponsibility: AssociateToResponsibility,
 ): StartServer {
     return {
         start: () => {
@@ -70,6 +77,7 @@ export function makeStartServer(
                     createResponsibility(name: String, description: String): IdResult! 
                     createRole(name: String, description: String): IdResult!
                     associateRoleToResponsibility(roleId: String, responsibilityId: String): Boolean!
+                    associateResponsibilityToRequest(responsibilityId: String, requestId: String): Boolean!
                 }
             `;
 
@@ -184,6 +192,18 @@ export function makeStartServer(
                         if (!isSuccess(result)) {
                             throw new Error("Failed to associate to role");
                         }
+                        return true;
+                    },
+                    associateResponsibilityToRequest: async (_: unknown, command: any) => {
+                        const result = await associateToResponsibility.associate({
+                            responsibilityId: command.responsibilityId,
+                            requestId: command.requestId,
+                        });
+
+                        if (!isSuccess(result)) {
+                            throw new Error("Failed to associate to responsibility");
+                        }
+
                         return true;
                     },
                 },
