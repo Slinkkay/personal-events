@@ -1,11 +1,4 @@
 import { isSuccess } from "@/result";
-import {
-    AssociateToResponsibility,
-    CreateRequest,
-    GetAllRequests,
-    GetFromResponsibility,
-    GetRequest,
-} from "@/domain/request";
 import { CreateRole, GetAllRoles, GetRole } from "@/domain/role";
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "node:http";
@@ -15,16 +8,14 @@ import {
     GetResponsibility,
     GetResponsibilityFromRole,
 } from "@/domain/responsibility";
+import { RequestGraphQL } from "./request";
 
 export type StartServer = {
     start(): Promise<void>;
 };
 
 export function makeStartServer(
-    createRequest: CreateRequest,
-    getRequest: GetRequest,
-    getAllRequests: GetAllRequests,
-    getFromResponsibility: GetFromResponsibility,
+    request: RequestGraphQL,
     createResponsibility: CreateResponsibility,
     getResponsibility: GetResponsibility,
     getResponsibilityFromRole: GetResponsibilityFromRole,
@@ -32,7 +23,6 @@ export function makeStartServer(
     getRole: GetRole,
     getAllRoles: GetAllRoles,
     associateToRole: AssociateToRole,
-    associateToResponsibility: AssociateToResponsibility,
 ): StartServer {
     return {
         start: () => {
@@ -74,6 +64,7 @@ export function makeStartServer(
                 
                 type Mutation {
                     requestCreate(dueDate: String, description: String): IdResult!
+                    requestUpdateDescription(requestId: String, description: String): Boolean!
                     requestAssociateToResponsibility(responsibilityId: String, requestId: String): Boolean!
                     responsibilityCreate(name: String, description: String): IdResult! 
                     responsibilityAssociateToRole(roleId: String, responsibilityId: String): Boolean!
@@ -83,13 +74,7 @@ export function makeStartServer(
 
             const resolvers = {
                 Query: {
-                    request: async (_: unknown, { id }: { id: string }) => {
-                        const result = await getRequest.get({ id });
-                        if (!isSuccess(result)) {
-                            throw new Error("Failed to get request");
-                        }
-                        return result.value;
-                    },
+                    ...request.Query,
                     responsibility: async (_: unknown, { id }: { id: string }) => {
                         const result = await getResponsibility.get({ id });
                         if (!isSuccess(result)) {
@@ -112,13 +97,6 @@ export function makeStartServer(
                         }
                         return result.value;
                     },
-                    requests: async () => {
-                        const result = await getAllRequests.getAll();
-                        if (!isSuccess(result)) {
-                            throw new Error("Failed to get all requests");
-                        }
-                        return result.value;
-                    },
                 },
                 Role: {
                     responsibilities: async (parent: { id: string }) => {
@@ -133,27 +111,10 @@ export function makeStartServer(
                     },
                 },
                 Responsibility: {
-                    requests: async (parent: { id: string }) => {
-                        const result = await getFromResponsibility.get({
-                            responsibilityId: parent.id,
-                        });
-
-                        if (!isSuccess(result)) {
-                            throw new Error("Failed to get request from responsibility");
-                        }
-                        return result.value;
-                    },
+                    ...request.Responsibility,
                 },
                 Mutation: {
-                    requestCreate: async (_: unknown, command: any) => {
-                        const result = await createRequest.create(command);
-
-                        if (!isSuccess(result)) {
-                            throw new Error("Failed to create request");
-                        }
-
-                        return { id: result.value };
-                    },
+                    ...request.Mutation,
                     roleCreate: async (_: unknown, { description, name }: { description: string; name: string }) => {
                         const result = await createRole.create({
                             description,
@@ -192,18 +153,6 @@ export function makeStartServer(
                         if (!isSuccess(result)) {
                             throw new Error("Failed to associate to role");
                         }
-                        return true;
-                    },
-                    requestAssociateToResponsibility: async (_: unknown, command: any) => {
-                        const result = await associateToResponsibility.associate({
-                            responsibilityId: command.responsibilityId,
-                            requestId: command.requestId,
-                        });
-
-                        if (!isSuccess(result)) {
-                            throw new Error("Failed to associate to responsibility");
-                        }
-
                         return true;
                     },
                 },

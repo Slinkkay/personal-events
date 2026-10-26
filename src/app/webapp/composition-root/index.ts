@@ -2,6 +2,7 @@ import { CompositionRoot, makeCompositionRoot, memoize } from "@/composition-roo
 import { Result, success } from "@/result";
 import { initSqliteConfig } from "@/app/common";
 import { makeStartServer, StartServer } from "@/app/webapp/domain/start-server";
+import { makeGraphQLRequestRoot } from "@/app/webapp/composition-root/request";
 
 export type WebServerCompositionRoot = {
     root: CompositionRoot;
@@ -11,14 +12,13 @@ export type WebServerCompositionRoot = {
 export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
     const root = makeCompositionRoot();
 
+    const request = makeGraphQLRequestRoot(root);
+
     return {
         root,
         getStartServer: memoize(() =>
             makeStartServer(
-                root.domain.request.getCreateRequest(),
-                root.domain.request.getGetRequest(),
-                root.domain.request.getGetAllRequests(),
-                root.domain.request.getFromResponsibility(),
+                request.getRequestGraphQL(),
                 root.domain.responsibility.getCreateResponsibility(),
                 root.domain.responsibility.getGetResponsibility(),
                 root.domain.responsibility.getGetResponsibilityFromRole(),
@@ -26,7 +26,6 @@ export function makeWebServerCompositionRoot(): WebServerCompositionRoot {
                 root.domain.role.getGetRole(),
                 root.domain.role.getGetAllRoles(),
                 root.domain.responsibility.getAssociateToRole(),
-                root.domain.request.getAssociateToResponsibility(),
             ),
         ),
     };
