@@ -215,7 +215,10 @@ export function makeStartServer(
             });
             const yoga = createYoga({
                 cors: {
-                    origin: "*",
+                    origin: ["https://gemini.google.com", "http://localhost:3000"],
+                    methods: ["POST", "OPTIONS"],
+                    allowedHeaders: ["Content-Type", "Authorization"],
+                    credentials: true,
                 },
                 schema,
             });
