@@ -73,11 +73,11 @@ export function makeStartServer(
                 }
                 
                 type Mutation {
-                    createRequest(dueDate: String, description: String): IdResult!
-                    createResponsibility(name: String, description: String): IdResult! 
-                    createRole(name: String, description: String): IdResult!
-                    associateRoleToResponsibility(roleId: String, responsibilityId: String): Boolean!
-                    associateResponsibilityToRequest(responsibilityId: String, requestId: String): Boolean!
+                    requestCreate(dueDate: String, description: String): IdResult!
+                    requestAssociateToResponsibility(responsibilityId: String, requestId: String): Boolean!
+                    responsibilityCreate(name: String, description: String): IdResult! 
+                    responsibilityAssociateToRole(roleId: String, responsibilityId: String): Boolean!
+                    roleCreate(name: String, description: String): IdResult!
                 }
             `;
 
@@ -145,7 +145,7 @@ export function makeStartServer(
                     },
                 },
                 Mutation: {
-                    createRequest: async (_: unknown, command: any) => {
+                    requestCreate: async (_: unknown, command: any) => {
                         const result = await createRequest.create(command);
 
                         if (!isSuccess(result)) {
@@ -154,7 +154,7 @@ export function makeStartServer(
 
                         return { id: result.value };
                     },
-                    createRole: async (_: unknown, { description, name }: { description: string; name: string }) => {
+                    roleCreate: async (_: unknown, { description, name }: { description: string; name: string }) => {
                         const result = await createRole.create({
                             description,
                             name,
@@ -165,7 +165,7 @@ export function makeStartServer(
                         }
                         return { id: result.value };
                     },
-                    createResponsibility: async (
+                    responsibilityCreate: async (
                         _: unknown,
                         { description, name }: { description: string; name: string },
                     ) => {
@@ -180,7 +180,7 @@ export function makeStartServer(
 
                         return { id: result.value };
                     },
-                    associateRoleToResponsibility: async (
+                    responsibilityAssociateToRole: async (
                         _: unknown,
                         { responsibilityId, roleId }: { roleId: string; responsibilityId: string },
                     ) => {
@@ -194,7 +194,7 @@ export function makeStartServer(
                         }
                         return true;
                     },
-                    associateResponsibilityToRequest: async (_: unknown, command: any) => {
+                    requestAssociateToResponsibility: async (_: unknown, command: any) => {
                         const result = await associateToResponsibility.associate({
                             responsibilityId: command.responsibilityId,
                             requestId: command.requestId,
@@ -215,7 +215,7 @@ export function makeStartServer(
             });
             const yoga = createYoga({
                 cors: {
-                    origin: ["https://gemini.google.com", "http://localhost:3000"],
+                    origin: "*",
                     methods: ["POST", "OPTIONS"],
                     allowedHeaders: ["Content-Type", "Authorization"],
                     credentials: true,
