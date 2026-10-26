@@ -20,7 +20,7 @@ export function makeGraphQLRequestRoot(root: CompositionRoot): GraphQLRequestRoo
 
     return {
         getRequestGraphQL: memoize(() =>
-            makeRequestGraphQL(getRequestQuery(), getRequestMutation(), root.domain.request),
+            makeRequestGraphQL(getRequestQuery(), getRequestMutation(), root.domain.request.getFromResponsibility()),
         ),
     };
 }

@@ -3,10 +3,10 @@ import {
     AssociateToResponsibility,
     CreateRequest,
     GetAllRequests,
+    GetFromResponsibility,
     GetRequest,
     UpdateRequestDescription,
 } from "@/domain/request";
-import { RequestRoot } from "@/composition-root/domain/request";
 
 export type RequestMutation = {
     requestCreate: (_: unknown, command: any) => any;
@@ -94,16 +94,14 @@ export type RequestGraphQL = {
 export function makeRequestGraphQL(
     Query: RequestQuery,
     Mutation: RequestMutation,
-    request: RequestRoot,
+    getFromResponsibility: GetFromResponsibility,
 ): RequestGraphQL {
     return {
         Mutation,
         Query,
         Responsibility: {
             requests: async ({ id }) => {
-                const fromResponsibility = request.getFromResponsibility();
-
-                const result = await fromResponsibility.get({
+                const result = await getFromResponsibility.get({
                     responsibilityId: id,
                 });
 
