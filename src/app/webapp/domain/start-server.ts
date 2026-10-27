@@ -1,8 +1,9 @@
 import { createSchema, createYoga } from "graphql-yoga";
-import { createServer } from "node:http";
+import express from "express";
 import { RequestGraphQL } from "./request";
 import { ResponsibilityGraphQL } from "./responsibility";
 import { RoleGraphQL } from "./role";
+import { join } from "node:path";
 
 export type StartServer = {
     start(): Promise<void>;
@@ -94,14 +95,18 @@ export function makeStartServer(
                 schema,
             });
 
-            const server = createServer(yoga);
+            const app = express();
+
+            app.use(express.static(join(".", "hosted")));
+
+            app.use(yoga.graphqlEndpoint, yoga);
 
             return new Promise((resolve, reject) => {
-                server.listen(3000, () => {
+                const server = app.listen(3000, () => {
                     console.log("Server started on port 3000.");
                 });
 
-                server.on("error", (err) => {
+                server.on("error", (err: any) => {
                     reject(err);
                 });
                 server.on("close", () => {
