@@ -19,6 +19,7 @@ export function makeGraphQLResponsibilityRoot(root: CompositionRoot): GraphQLRes
         makeResponsibilityMutation(
             root.domain.responsibility.getCreateResponsibility(),
             root.domain.responsibility.getAssociateToRole(),
+            root.domain.responsibility.getUpdateResponsibilityName(),
         ),
     );
 
