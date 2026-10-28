@@ -65,6 +65,7 @@ export function makeStartServer(
                     responsibilityAssociateToRole(roleId: String, responsibilityId: String): Boolean!
                     roleCreate(name: String, description: String): IdResult!
                     roleUpdateDescription(roleId: String, description: String): Boolean!
+                    roleUpdateName(roleId: String, name: String): Boolean!
                 }
             `;
 
