@@ -4,6 +4,7 @@ import {
     GetResponsibility,
     GetResponsibilityFromRole,
     Responsibility,
+    UpdateResponsibilityDescription,
     UpdateResponsibilityName,
 } from "@/domain/responsibility";
 import { isSuccess } from "@/result";
@@ -12,12 +13,14 @@ export type ResponsibilityMutation = {
     responsibilityCreate: (_: unknown, command: any) => any;
     responsibilityAssociateToRole: (_: unknown, command: any) => any;
     responsibilityUpdateName: (_: unknown, command: any) => any;
+    responsibilityUpdateDescription: (_: unknown, command: any) => any;
 };
 
 export function makeResponsibilityMutation(
     createResponsibility: CreateResponsibility,
     associateToRole: AssociateToRole,
     updateResponsibilityName: UpdateResponsibilityName,
+    updateResponsibilityDescription: UpdateResponsibilityDescription,
 ): ResponsibilityMutation {
     return {
         responsibilityCreate: async (_: unknown, { description, name }: { description: string; name: string }) => {
@@ -54,6 +57,18 @@ export function makeResponsibilityMutation(
 
             if (!isSuccess(result)) {
                 throw new Error("Failed to update name on responsibility");
+            }
+
+            return true;
+        },
+        responsibilityUpdateDescription: async (_: unknown, command: any) => {
+            const result = await updateResponsibilityDescription.update({
+                description: command.description,
+                id: command.responsibilityId,
+            });
+
+            if (!isSuccess(result)) {
+                throw new Error("Failed to update description on responsibility");
             }
 
             return true;

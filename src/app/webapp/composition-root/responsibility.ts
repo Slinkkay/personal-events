@@ -20,6 +20,7 @@ export function makeGraphQLResponsibilityRoot(root: CompositionRoot): GraphQLRes
             root.domain.responsibility.getCreateResponsibility(),
             root.domain.responsibility.getAssociateToRole(),
             root.domain.responsibility.getUpdateResponsibilityName(),
+            root.domain.responsibility.getUpdateResponsibilityDescription(),
         ),
     );
 
