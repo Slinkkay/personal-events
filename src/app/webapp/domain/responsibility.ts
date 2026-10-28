@@ -6,6 +6,7 @@ import {
     Responsibility,
     UpdateResponsibilityDescription,
     UpdateResponsibilityName,
+    UpdateResponsibilityStatus,
 } from "@/domain/responsibility";
 import { isSuccess } from "@/result";
 
@@ -14,6 +15,7 @@ export type ResponsibilityMutation = {
     responsibilityAssociateToRole: (_: unknown, command: any) => any;
     responsibilityUpdateName: (_: unknown, command: any) => any;
     responsibilityUpdateDescription: (_: unknown, command: any) => any;
+    responsibilityUpdateStatus: (_: unknown, command: any) => any;
 };
 
 export function makeResponsibilityMutation(
@@ -21,6 +23,7 @@ export function makeResponsibilityMutation(
     associateToRole: AssociateToRole,
     updateResponsibilityName: UpdateResponsibilityName,
     updateResponsibilityDescription: UpdateResponsibilityDescription,
+    updateResponsibilityStatus: UpdateResponsibilityStatus,
 ): ResponsibilityMutation {
     return {
         responsibilityCreate: async (_: unknown, { description, name }: { description: string; name: string }) => {
@@ -69,6 +72,18 @@ export function makeResponsibilityMutation(
 
             if (!isSuccess(result)) {
                 throw new Error("Failed to update description on responsibility");
+            }
+
+            return true;
+        },
+        responsibilityUpdateStatus: async (_: unknown, command: any) => {
+            const result = await updateResponsibilityStatus.update({
+                id: command.responsibilityId,
+                status: command.status,
+            });
+
+            if (!isSuccess(result)) {
+                throw new Error("Failed to update status on responsibility");
             }
 
             return true;
