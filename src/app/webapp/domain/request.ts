@@ -7,6 +7,7 @@ import {
     GetRequest,
     UpdateRequestDescription,
     UpdateRequestDueDate,
+    UpdateRequestStatus,
 } from "@/domain/request";
 
 export type RequestMutation = {
@@ -14,6 +15,7 @@ export type RequestMutation = {
     requestUpdateDescription: (_: unknown, command: any) => any;
     requestAssociateToResponsibility: (_: unknown, command: any) => any;
     requestUpdateDueDate: (_: unknown, command: any) => any;
+    requestUpdateStatus: (_: unknown, command: any) => any;
 };
 
 export function makeRequestMutation(
@@ -21,6 +23,7 @@ export function makeRequestMutation(
     associateToResponsibility: AssociateToResponsibility,
     updateRequestDescription: UpdateRequestDescription,
     updateRequestDueDate: UpdateRequestDueDate,
+    updateRequestStatus: UpdateRequestStatus,
 ): RequestMutation {
     return {
         requestCreate: async (_: unknown, command: any) => {
@@ -55,6 +58,18 @@ export function makeRequestMutation(
 
             if (!isSuccess(result)) {
                 throw new Error("Failed to update due date on request");
+            }
+
+            return true;
+        },
+        requestUpdateStatus: async (_: unknown, command: any) => {
+            const result = await updateRequestStatus.update({
+                status: command.status,
+                id: command.requestId,
+            });
+
+            if (!isSuccess(result)) {
+                throw new Error("Failed to update status on request");
             }
 
             return true;
