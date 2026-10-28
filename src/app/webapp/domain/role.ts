@@ -1,11 +1,12 @@
 import { isSuccess } from "@/result";
-import { CreateRole, GetAllRoles, GetRole } from "@/domain/role";
+import { CreateRole, GetAllRoles, GetRole, UpdateRoleDescription } from "@/domain/role";
 
 export type RoleMutation = {
     roleCreate: (_: unknown, command: any) => Promise<any>;
+    roleUpdateDescription: (_: unknown, command: any) => Promise<any>;
 };
 
-export function makeRoleMutation(createRole: CreateRole): RoleMutation {
+export function makeRoleMutation(createRole: CreateRole, updateRoleDescription: UpdateRoleDescription): RoleMutation {
     return {
         roleCreate: async (_: unknown, { description, name }: any) => {
             const result = await createRole.create({
@@ -17,6 +18,17 @@ export function makeRoleMutation(createRole: CreateRole): RoleMutation {
                 throw new Error("Failed to create role");
             }
             return { id: result.value };
+        },
+        roleUpdateDescription: async (_, command) => {
+            const result = await updateRoleDescription.update({
+                id: command.roleId,
+                description: command.description,
+            });
+
+            if (!isSuccess(result)) {
+                throw new Error("Failed to update role description");
+            }
+            return true;
         },
     };
 }

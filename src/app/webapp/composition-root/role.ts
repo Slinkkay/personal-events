@@ -8,7 +8,9 @@ export type GraphQLRoleRoot = {
 export function makeGraphQLRoleRoot(root: CompositionRoot): GraphQLRoleRoot {
     const getQuery = memoize(() => makeRoleQuery(root.domain.role.getGetRole(), root.domain.role.getGetAllRoles()));
 
-    const getMutation = memoize(() => makeRoleMutation(root.domain.role.getCreateRole()));
+    const getMutation = memoize(() =>
+        makeRoleMutation(root.domain.role.getCreateRole(), root.domain.role.getUpdateRoleDescription()),
+    );
 
     return {
         getGraphQLRole: memoize(() => makeRoleGraphQL(getQuery(), getMutation())),
