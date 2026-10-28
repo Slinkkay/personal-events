@@ -55,6 +55,7 @@ export function makeStartServer(
                 type Mutation {
                     requestCreate(dueDate: String, description: String): IdResult!
                     requestUpdateDescription(requestId: String, description: String): Boolean!
+                    requestUpdateDueDate(requestId: String, dueDate: String): Boolean!
                     requestAssociateToResponsibility(responsibilityId: String, requestId: String): Boolean!
                     responsibilityCreate(name: String, description: String): IdResult! 
                     responsibilityAssociateToRole(roleId: String, responsibilityId: String): Boolean!

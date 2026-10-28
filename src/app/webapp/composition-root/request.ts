@@ -11,6 +11,7 @@ export function makeGraphQLRequestRoot(root: CompositionRoot): GraphQLRequestRoo
             root.domain.request.getCreateRequest(),
             root.domain.request.getAssociateToResponsibility(),
             root.domain.request.getUpdateRequestDescription(),
+            root.domain.request.getUpdateRequestDueDate(),
         ),
     );
 

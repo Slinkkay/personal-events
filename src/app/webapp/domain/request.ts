@@ -6,18 +6,21 @@ import {
     GetFromResponsibility,
     GetRequest,
     UpdateRequestDescription,
+    UpdateRequestDueDate,
 } from "@/domain/request";
 
 export type RequestMutation = {
     requestCreate: (_: unknown, command: any) => any;
     requestUpdateDescription: (_: unknown, command: any) => any;
     requestAssociateToResponsibility: (_: unknown, command: any) => any;
+    requestUpdateDueDate: (_: unknown, command: any) => any;
 };
 
 export function makeRequestMutation(
     createRequest: CreateRequest,
     associateToResponsibility: AssociateToResponsibility,
     updateRequestDescription: UpdateRequestDescription,
+    updateRequestDueDate: UpdateRequestDueDate,
 ): RequestMutation {
     return {
         requestCreate: async (_: unknown, command: any) => {
@@ -40,6 +43,18 @@ export function makeRequestMutation(
 
             if (!isSuccess(result)) {
                 throw new Error("Failed to associate to responsibility");
+            }
+
+            return true;
+        },
+        requestUpdateDueDate: async (_: unknown, command: any) => {
+            const result = await updateRequestDueDate.update({
+                dueDate: command.dueDate,
+                id: command.requestId,
+            });
+
+            if (!isSuccess(result)) {
+                throw new Error("Failed to update due date on request");
             }
 
             return true;
