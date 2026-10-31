@@ -104,7 +104,7 @@ export function makeStartServer(
 
             const app = express();
 
-            app.use(express.static(join(".", "hosted")));
+            app.use(express.static(join(".", "dist")));
 
             app.use(yoga.graphqlEndpoint, yoga);
 
