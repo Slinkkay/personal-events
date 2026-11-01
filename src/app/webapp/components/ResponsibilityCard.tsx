@@ -9,8 +9,6 @@ interface ResponsibilityCardProps {
     requests: RequestItem[];
     isExpanded: boolean;
     onToggleExpand: (id: string) => void;
-    onStatusChange: (requestId: string, newStatus: RequestStatus) => void;
-    onAddRequest?: (responsibilityId: string) => void;
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
 }
@@ -20,8 +18,6 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
     requests,
     isExpanded,
     onToggleExpand,
-    onStatusChange,
-    onAddRequest,
     onEdit,
     onDelete,
 }) => {
@@ -51,15 +47,6 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
 
                 {/* Responsibility Action Buttons (prevent triggering accordion toggle) */}
                 <div className="flex items-center gap-1 self-end sm:self-center" onClick={(e) => e.stopPropagation()}>
-                    {onAddRequest && (
-                        <button
-                            onClick={() => onAddRequest(responsibility.id)}
-                            title="Add Request"
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm"
-                        >
-                            <Plus className="w-3 h-3" /> Add Request
-                        </button>
-                    )}
                     {onEdit && (
                         <button
                             onClick={() => onEdit(responsibility.id)}
@@ -98,9 +85,7 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                         {requests.length === 0 ? (
                             <p className="text-xs text-slate-400 italic py-1">No requests created yet.</p>
                         ) : (
-                            requests.map((req) => (
-                                <RequestCard key={req.id} request={req} onStatusChange={onStatusChange} />
-                            ))
+                            requests.map((req) => <RequestCard key={req.id} request={req} />)
                         )}
                     </div>
                 </div>

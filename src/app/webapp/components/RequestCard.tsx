@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestItem, RequestStatus } from "../useOmniStore";
+import { RequestItem, RequestStatus, useOmniStore } from "../useOmniStore";
 import { StatusBadge, StatusSelect } from "./common";
 import { Edit3, Trash2 } from "lucide-react";
 
@@ -7,19 +7,11 @@ interface RequestCardProps {
     request: RequestItem;
     roleTitle?: string;
     respTitle?: string;
-    onStatusChange: (id: string, newStatus: RequestStatus) => void;
     onEdit?: (id: string) => void;
-    onDelete?: (id: string) => void;
 }
 
-export const RequestCard: React.FC<RequestCardProps> = ({
-    request,
-    roleTitle,
-    respTitle,
-    onStatusChange,
-    onEdit,
-    onDelete,
-}) => {
+export const RequestCard: React.FC<RequestCardProps> = ({ request, roleTitle, respTitle, onEdit }) => {
+    const { updateRequestStatus } = useOmniStore();
     const lines = request.description.split("\n");
     const reqTitle = lines[0] || "Untitled Request";
     const reqBody = lines.slice(1).join("\n");
@@ -46,7 +38,10 @@ export const RequestCard: React.FC<RequestCardProps> = ({
             </div>
 
             <div className="flex items-center gap-2 self-end md:self-center">
-                <StatusSelect value={request.status} onChange={(newStatus) => onStatusChange(request.id, newStatus)} />
+                <StatusSelect
+                    value={request.status}
+                    onChange={(newStatus) => updateRequestStatus(request.id, newStatus)}
+                />
                 {onEdit && (
                     <button
                         onClick={() => onEdit(request.id)}
@@ -54,15 +49,6 @@ export const RequestCard: React.FC<RequestCardProps> = ({
                         title="Edit Request"
                     >
                         <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                )}
-                {onDelete && (
-                    <button
-                        onClick={() => onDelete(request.id)}
-                        className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                        title="Delete Request"
-                    >
-                        <Trash2 className="w-3.5 h-3.5" />
                     </button>
                 )}
             </div>

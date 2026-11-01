@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { OmniStoreProvider } from "./useOmniStore";
 import { HierarchyView } from "./HierarchyView";
 import { RequestsView } from "./RequestsView";
-import { Layers, FolderTree, CheckSquare } from "lucide-react";
+import { RoleModal } from "./components/RoleModal";
+import { Layers, FolderTree, CheckSquare, Plus, Settings } from "lucide-react";
 
 type ActiveTab = "hierarchy" | "requests";
 
 interface HeaderProps {
     activeTab: ActiveTab;
     setActiveTab: (tab: ActiveTab) => void;
+    onOpenAddRole: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
@@ -61,14 +63,29 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
 export default function App() {
     const [activeTab, setActiveTab] = useState<ActiveTab>("hierarchy");
+    const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+    const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
+
+    const handleOpenAddRole = () => {
+        setEditingRoleId(null);
+        setIsRoleModalOpen(true);
+    };
 
     return (
         <OmniStoreProvider>
             <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
-                <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+                <Header activeTab={activeTab} setActiveTab={setActiveTab} onOpenAddRole={handleOpenAddRole} />
+
                 <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    {activeTab === "hierarchy" ? <HierarchyView /> : <RequestsView />}
+                    {activeTab === "hierarchy" ? (
+                        <HierarchyView onOpenAddRoleModal={handleOpenAddRole} />
+                    ) : (
+                        <RequestsView />
+                    )}
                 </main>
+
+                {/* Global Role Create/Edit Modal */}
+                <RoleModal isOpen={isRoleModalOpen} roleId={editingRoleId} onClose={() => setIsRoleModalOpen(false)} />
             </div>
         </OmniStoreProvider>
     );
