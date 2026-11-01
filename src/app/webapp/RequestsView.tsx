@@ -64,13 +64,7 @@ export const RequestsView: React.FC = () => {
 
             <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">
                 {filtered.map(({ req, resp, role }) => (
-                    <RequestCard
-                        key={req.id}
-                        request={req}
-                        roleTitle={role.title}
-                        respTitle={resp.title}
-                        onStatusChange={updateRequestStatus}
-                    />
+                    <RequestCard key={req.id} request={req} roleTitle={role.title} respTitle={resp.title} />
                 ))}
             </div>
         </div>

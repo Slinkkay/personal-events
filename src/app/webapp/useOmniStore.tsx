@@ -58,6 +58,9 @@ interface OmniStoreContextType {
 
     // Request Actions
     updateRequestStatus: (id: string, newStatus: RequestStatus) => void;
+    addRequest: (req: Omit<RequestItem, "id"> & { id?: string }) => void;
+    updateRequest: (id: string, updatedFields: Partial<RequestItem>) => void;
+    deleteRequest: (id: string) => void;
     resetData: () => void;
 }
 
@@ -395,6 +398,29 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
         }));
     };
 
+    // 2. Add Actions inside OmniStoreProvider:
+    const addRequest = (reqInput: Omit<RequestItem, "id"> & { id?: string }) => {
+        const newReq: RequestItem = {
+            ...reqInput,
+            id: reqInput.id || `req-${Date.now()}`,
+        };
+        setData((prev) => ({ ...prev, requests: [...prev.requests, newReq] }));
+    };
+
+    const updateRequest = (id: string, updatedFields: Partial<RequestItem>) => {
+        setData((prev) => ({
+            ...prev,
+            requests: prev.requests.map((req) => (req.id === id ? { ...req, ...updatedFields } : req)),
+        }));
+    };
+
+    const deleteRequest = (id: string) => {
+        setData((prev) => ({
+            ...prev,
+            requests: prev.requests.filter((req) => req.id !== id),
+        }));
+    };
+
     const resetData = () => {
         setData(DEFAULT_DATA);
     };
@@ -413,6 +439,9 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
                 resetData,
                 addResponsibility,
                 updateResponsibility,
+                addRequest,
+                deleteRequest,
+                updateRequest,
             }}
         >
             {children}

@@ -13,6 +13,7 @@ interface RoleViewProps {
     onToggleExpand: (id: string) => void;
     onToggleRespExpand: (id: string) => void;
     onAddResponsibility?: (roleId: string) => void;
+    onAddRequest?: (responsibilityId: string) => void;
 }
 
 export const RoleView: React.FC<RoleViewProps> = ({
@@ -24,6 +25,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
     onToggleExpand,
     onToggleRespExpand,
     onAddResponsibility,
+    onAddRequest,
 }) => {
     // Directly consume actions from the store instead of receiving them via props
     const { updateRole, deleteRole } = useOmniStore();
@@ -119,6 +121,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
                                         requests={respRequests}
                                         isExpanded={isRespExpanded}
                                         onToggleExpand={onToggleRespExpand}
+                                        onAddRequest={onAddRequest}
                                     />
                                 );
                             })

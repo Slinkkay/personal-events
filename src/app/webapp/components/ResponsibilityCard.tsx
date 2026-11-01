@@ -9,6 +9,7 @@ interface ResponsibilityCardProps {
     requests: RequestItem[];
     isExpanded: boolean;
     onToggleExpand: (id: string) => void;
+    onAddRequest?: (responsibilityId: string) => void; // Pass ID back up
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
 }
@@ -20,6 +21,7 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
     onToggleExpand,
     onEdit,
     onDelete,
+    onAddRequest,
 }) => {
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ml-0 sm:ml-4 transition-all">
@@ -63,6 +65,18 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                             className="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200"
                         >
                             <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                    )}
+                    {onAddRequest && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onAddRequest(responsibility.id); // Triggers request modal pre-linked to this responsibility
+                            }}
+                            title="Add Request"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm"
+                        >
+                            <Plus className="w-3 h-3" /> Add Request
                         </button>
                     )}
                 </div>
