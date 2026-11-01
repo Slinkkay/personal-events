@@ -1,4 +1,9 @@
-import { makeRequestGraphQL, makeRequestMutation, makeRequestQuery, RequestGraphQL } from "@/app/webapp/domain/request";
+import {
+    makeRequestGraphQL,
+    makeRequestMutation,
+    makeRequestQuery,
+    RequestGraphQL,
+} from "@/app/webapp/api/domain/request";
 import { CompositionRoot, memoize } from "@/composition-root";
 
 export type GraphQLRequestRoot = {

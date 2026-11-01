@@ -1,5 +1,5 @@
 import { CompositionRoot, memoize } from "@/composition-root";
-import { makeRoleGraphQL, makeRoleMutation, makeRoleQuery, RoleGraphQL } from "@/app/webapp/domain/role";
+import { makeRoleGraphQL, makeRoleMutation, makeRoleQuery, RoleGraphQL } from "@/app/webapp/api/domain/role";
 
 export type GraphQLRoleRoot = {
     getGraphQLRole(): RoleGraphQL;

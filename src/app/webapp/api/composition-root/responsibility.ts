@@ -3,7 +3,7 @@ import {
     makeResponsibilityMutation,
     makeResponsibilityQuery,
     ResponsibilityGraphQL,
-} from "@/app/webapp/domain/responsibility";
+} from "@/app/webapp/api/domain/responsibility";
 import { CompositionRoot, memoize } from "@/composition-root";
 
 export type GraphQLResponsibilityRoot = {

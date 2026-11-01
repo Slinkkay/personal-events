@@ -1,10 +1,10 @@
 import { CompositionRoot, makeCompositionRoot, memoize } from "@/composition-root";
 import { Result, success } from "@/result";
 import { initSqliteConfig } from "@/app/common";
-import { makeStartServer, StartServer } from "@/app/webapp/domain/start-server";
+import { makeStartServer, StartServer } from "@/app/webapp/api/domain/start-server";
 import { makeGraphQLRequestRoot } from "./request";
 import { makeGraphQLResponsibilityRoot } from "./responsibility";
-import { makeGraphQLRoleRoot } from "@/app/webapp/composition-root/role";
+import { makeGraphQLRoleRoot } from "@/app/webapp/api/composition-root/role";
 
 export type WebServerCompositionRoot = {
     root: CompositionRoot;
