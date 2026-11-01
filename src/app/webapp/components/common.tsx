@@ -1,6 +1,7 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { RequestStatus, RoleStatus, RespStatus } from "../useOmniStore";
+import { marked } from "marked";
 
 // --- 1. DUE DATE URGENCY HELPER ---
 export interface UrgencyInfo {
@@ -107,9 +108,29 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ type, status, dueDate 
 };
 
 // --- 3. REUSABLE MARKDOWN / TEXT VIEWER ---
+// Configure marked to override the default link renderer globally
+marked.use({
+    renderer: {
+        link({ href, title, text }) {
+            // Added text-blue-600 for color, hover:underline for interactivity, and font-medium for emphasis
+            let out = `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium"`;
+            if (title) {
+                out += ` title="${title}"`;
+            }
+            out += `>${text}</a>`;
+            return out;
+        },
+    },
+});
+
 export const MarkdownViewer: React.FC<{ content: string; className?: string }> = ({ content, className = "" }) => {
+    const rawHtml = marked.parse(content, { async: false }) as string;
+
     return (
-        <div className={`prose text-xs text-slate-700 whitespace-pre-line leading-relaxed ${className}`}>{content}</div>
+        <div
+            className={`prose text-xs text-slate-700 leading-relaxed ${className}`}
+            dangerouslySetInnerHTML={{ __html: rawHtml }}
+        />
     );
 };
 
