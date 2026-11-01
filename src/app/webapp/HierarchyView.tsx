@@ -6,9 +6,10 @@ import { Plus } from "lucide-react";
 
 interface HierarchyViewProps {
     onOpenAddRoleModal?: () => void;
+    onOpenAddRespModal?: () => void;
 }
 
-export const HierarchyView: React.FC<HierarchyViewProps> = ({ onOpenAddRoleModal }) => {
+export const HierarchyView: React.FC<HierarchyViewProps> = ({ onOpenAddRoleModal, onOpenAddRespModal }) => {
     const { data } = useOmniStore();
     const [searchQuery, setSearchQuery] = useState("");
     const [showClosed, setShowClosed] = useState(false);
@@ -94,6 +95,7 @@ export const HierarchyView: React.FC<HierarchyViewProps> = ({ onOpenAddRoleModal
                                 expandedResp={expandedResp}
                                 onToggleExpand={toggleRoleExpand}
                                 onToggleRespExpand={toggleRespExpand}
+                                onAddResponsibility={onOpenAddRespModal}
                             />
                         );
                     })

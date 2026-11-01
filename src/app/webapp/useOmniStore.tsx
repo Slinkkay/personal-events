@@ -43,15 +43,21 @@ export interface GraphQLConfig {
 
 interface OmniStoreContextType {
     data: OmniData;
-    loading: boolean;
-    error: string | null;
     gqlConfig: GraphQLConfig;
     setGqlConfig: React.Dispatch<React.SetStateAction<GraphQLConfig>>;
-    fetchData: () => Promise<void>;
-    addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => Promise<void>;
-    updateRole: (id: string, updatedFields: Partial<Role>) => Promise<void>;
+
+    // Role Actions
+    addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => void;
+    updateRole: (id: string, updatedFields: Partial<Role>) => void;
     deleteRole: (id: string) => void;
-    updateRequestStatus: (id: string, newStatus: RequestStatus) => Promise<void>;
+
+    // Responsibility Actions (New Types)
+    addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => void;
+    updateResponsibility: (id: string, updatedFields: Partial<Responsibility>) => void;
+    deleteResponsibility: (id: string) => void;
+
+    // Request Actions
+    updateRequestStatus: (id: string, newStatus: RequestStatus) => void;
     resetData: () => void;
 }
 
@@ -362,6 +368,33 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
     };
 
+    const addResponsibility = (respInput: Omit<Responsibility, "id"> & { id?: string }) => {
+        console.log(respInput);
+        const newResp: Responsibility = {
+            ...respInput,
+            id: respInput.id || `resp-${Date.now()}`,
+        };
+        setData((prev) => ({ ...prev, responsibilities: [...prev.responsibilities, newResp] }));
+    };
+
+    const updateResponsibility = (id: string, updatedFields: Partial<Responsibility>) => {
+        setData((prev) => ({
+            ...prev,
+            responsibilities: prev.responsibilities.map((resp) =>
+                resp.id === id ? { ...resp, ...updatedFields } : resp,
+            ),
+        }));
+    };
+
+    const deleteResponsibility = (id: string) => {
+        setData((prev) => ({
+            ...prev,
+            responsibilities: prev.responsibilities.filter((resp) => resp.id !== id),
+            // Clean up child requests belonging to this responsibility
+            requests: prev.requests.filter((req) => req.responsibilityId !== id),
+        }));
+    };
+
     const resetData = () => {
         setData(DEFAULT_DATA);
     };
@@ -370,16 +403,16 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
         <OmniStoreContext.Provider
             value={{
                 data,
-                loading,
-                error,
                 gqlConfig,
                 setGqlConfig,
-                fetchData,
                 addRole,
                 updateRole,
                 deleteRole,
+                deleteResponsibility,
                 updateRequestStatus,
                 resetData,
+                addResponsibility,
+                updateResponsibility,
             }}
         >
             {children}
