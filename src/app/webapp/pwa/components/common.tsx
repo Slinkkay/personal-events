@@ -12,7 +12,7 @@ export interface UrgencyInfo {
 }
 
 export const getDueDateStatus = (dueDateStr: string, status: RequestStatus): UrgencyInfo => {
-    if (status === "Complete") {
+    if (status === "CLOSED") {
         return {
             label: "Complete",
             color: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -60,46 +60,37 @@ interface StatusBadgeProps {
     dueDate?: string;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ type, status, dueDate }) => {
-    if (type === "role") {
+export const StatusBadge: React.FC<{
+    type: "role" | "resp" | "request";
+    status?: RoleStatus | RespStatus | RequestStatus;
+    dueDate?: string;
+}> = ({ type, status, dueDate }) => {
+    if (status === "CLOSED") {
         return (
-            <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase ${
-                    status === "OPEN"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                        : "bg-slate-700 text-slate-400 border border-slate-600"
-                }`}
-            >
-                {status}
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase bg-slate-200 text-slate-600 border border-slate-300">
+                CLOSED
             </span>
         );
     }
 
-    if (type === "resp") {
+    if (type === "role" || type === "resp") {
         return (
-            <span
-                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                    status === "Completed"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : status === "In Progress"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-slate-200 text-slate-700"
-                }`}
-            >
-                {status}
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
+                OPEN
             </span>
         );
     }
 
-    // Request Badge with Urgency Calculations
-    if (type === "request" && dueDate && status) {
-        const dueInfo = getDueDateStatus(dueDate, status as RequestStatus);
+    if (type === "request") {
         return (
             <span
-                className={`text-[10px] px-2 py-0.5 rounded-full border inline-flex items-center gap-1 ${dueInfo.color}`}
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                    status === "IN_PROGRESS"
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : "bg-indigo-50 text-indigo-700 border-indigo-200"
+                }`}
             >
-                <span className={`w-1.5 h-1.5 rounded-full ${dueInfo.dot}`}></span>
-                {dueInfo.label}
+                {status}
             </span>
         );
     }
@@ -141,16 +132,19 @@ interface StatusSelectProps {
     className?: string;
 }
 
-export const StatusSelect: React.FC<StatusSelectProps> = ({ value, onChange, className = "" }) => {
+export const StatusSelect: React.FC<{
+    value: RequestStatus;
+    onChange: (newStatus: RequestStatus) => void;
+}> = ({ value, onChange }) => {
     return (
         <select
             value={value}
             onChange={(e) => onChange(e.target.value as RequestStatus)}
-            className={`text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm font-medium ${className}`}
+            className="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 focus:outline-none shadow-sm font-medium"
         >
-            <option value="Ready">Ready</option>
-            <option value="Working">Working</option>
-            <option value="Complete">Complete</option>
+            <option value="OPEN">OPEN</option>
+            <option value="IN_PROGRESS">IN_PROGRESS</option>
+            <option value="CLOSED">CLOSED</option>
         </select>
     );
 };

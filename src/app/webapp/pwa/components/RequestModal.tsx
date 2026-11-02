@@ -15,7 +15,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
     const [responsibilityId, setResponsibilityId] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
-    const [status, setStatus] = useState<RequestStatus>("Ready");
+    const [status, setStatus] = useState<RequestStatus>("OPEN");
 
     // Search & Combobox states for parent responsibility selection
     const [respSearchQuery, setRespSearchQuery] = useState("");
@@ -36,7 +36,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
             setResponsibilityId(initialRespId);
             setDescription("");
             setDueDate(new Date().toISOString().split("T")[0]);
-            setStatus("Ready");
+            setStatus("OPEN");
         }
         setRespSearchQuery("");
         setIsDropdownOpen(false);
@@ -215,11 +215,11 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
                             <select
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value as RequestStatus)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs font-semibold"
                             >
-                                <option value="Ready">Ready</option>
-                                <option value="Working">Working</option>
-                                <option value="Complete">Complete</option>
+                                <option value="OPEN">OPEN</option>
+                                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                <option value="CLOSED">CLOSED</option>
                             </select>
                         </div>
                     </div>

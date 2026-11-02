@@ -20,7 +20,7 @@ export const ResponsibilityModal: React.FC<ResponsibilityModalProps> = ({
     const [roleId, setRoleId] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [status, setStatus] = useState<RespStatus>("Active");
+    const [status, setStatus] = useState<RespStatus>("OPEN");
 
     useEffect(() => {
         if (responsibilityId) {
@@ -35,7 +35,7 @@ export const ResponsibilityModal: React.FC<ResponsibilityModalProps> = ({
             setRoleId(defaultRoleId || data.roles[0]?.id || "");
             setTitle("");
             setDescription("");
-            setStatus("Active");
+            setStatus("OPEN");
         }
     }, [responsibilityId, defaultRoleId, data.responsibilities, data.roles, isOpen]);
 
@@ -134,11 +134,10 @@ export const ResponsibilityModal: React.FC<ResponsibilityModalProps> = ({
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value as RespStatus)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs font-semibold"
                         >
-                            <option value="Active">Active</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
+                            <option value="OPEN">OPEN</option>
+                            <option value="CLOSED">CLOSED</option>
                         </select>
                     </div>
 

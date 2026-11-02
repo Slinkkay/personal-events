@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useCa
 
 // --- TYPE DEFINITIONS ---
 export type RoleStatus = "OPEN" | "CLOSED";
-export type RespStatus = "Active" | "In Progress" | "Completed";
-export type RequestStatus = "Ready" | "Working" | "Complete";
+export type RespStatus = "OPEN" | "CLOSED";
+export type RequestStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
 
 export interface Role {
     id: string;
@@ -88,7 +88,7 @@ const DEFAULT_DATA: OmniData = {
             roleId: "role-1",
             title: "Lead for Feature X Development",
             description: "Drive end-to-end design...",
-            status: "In Progress",
+            status: "OPEN",
         },
     ],
     requests: [
@@ -97,7 +97,7 @@ const DEFAULT_DATA: OmniData = {
             responsibilityId: "resp-1",
             description: "Complete API Design Document\nDraft the OpenAPI spec.",
             dueDate: "2026-11-02",
-            status: "Working",
+            status: "IN_PROGRESS",
         },
     ],
 };
