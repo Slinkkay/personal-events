@@ -10,7 +10,7 @@ interface RequestModalProps {
 }
 
 export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, defaultResponsibilityId, onClose }) => {
-    const { data, addRequest, updateRequest } = useOmniStore();
+    const { data, addRequest } = useOmniStore();
 
     const [responsibilityId, setResponsibilityId] = useState("");
     const [description, setDescription] = useState("");
@@ -57,7 +57,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
         if (!description.trim() || !responsibilityId) return;
 
         if (requestId) {
-            updateRequest(requestId, { responsibilityId, description, dueDate, status });
+            alert("Need to update to handle editing a Request");
         } else {
             addRequest({ responsibilityId, description, dueDate, status });
         }

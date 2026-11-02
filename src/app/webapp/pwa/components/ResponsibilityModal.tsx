@@ -15,7 +15,7 @@ export const ResponsibilityModal: React.FC<ResponsibilityModalProps> = ({
     defaultRoleId,
     onClose,
 }) => {
-    const { data, addResponsibility, updateResponsibility } = useOmniStore();
+    const { data, addResponsibility } = useOmniStore();
 
     const [roleId, setRoleId] = useState("");
     const [title, setTitle] = useState("");
@@ -41,12 +41,12 @@ export const ResponsibilityModal: React.FC<ResponsibilityModalProps> = ({
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.SubmitEvent) => {
         e.preventDefault();
         if (!title.trim() || !roleId) return;
 
         if (responsibilityId) {
-            updateResponsibility(responsibilityId, { roleId, title, description, status });
+            alert("Need to update to handle editing a responsibility");
         } else {
             addResponsibility({ roleId, title, description, status });
         }

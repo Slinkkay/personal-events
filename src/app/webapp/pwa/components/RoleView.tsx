@@ -28,11 +28,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
     onAddRequest,
 }) => {
     // Directly consume actions from the store instead of receiving them via props
-    const { updateRole, deleteRole } = useOmniStore();
-
-    const handleRoleStatusToggle = () => {
-        updateRole(role.id, { status: role.status === "OPEN" ? "CLOSED" : "OPEN" });
-    };
+    const { deleteResponsibility, deleteRole } = useOmniStore();
 
     const handleRoleDelete = () => {
         deleteRole(role.id);
@@ -72,7 +68,6 @@ export const RoleView: React.FC<RoleViewProps> = ({
                         </button>
                     )}
                     <button
-                        onClick={handleRoleStatusToggle}
                         title={role.status === "OPEN" ? "Close Role" : "Reopen Role"}
                         className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-xl transition-all border border-slate-700"
                     >
@@ -122,6 +117,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
                                         isExpanded={isRespExpanded}
                                         onToggleExpand={onToggleRespExpand}
                                         onAddRequest={onAddRequest}
+                                        onDelete={deleteResponsibility}
                                     />
                                 );
                             })

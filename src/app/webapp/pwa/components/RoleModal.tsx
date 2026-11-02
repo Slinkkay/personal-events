@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useOmniStore, Role, RoleStatus } from "../useOmniStore";
-import { X, FolderPlus, Edit3, ShieldAlert } from "lucide-react";
+import { useOmniStore, RoleStatus } from "../useOmniStore";
+import { X, FolderPlus, Edit3 } from "lucide-react";
 
 interface RoleModalProps {
     isOpen: boolean;
@@ -9,7 +9,7 @@ interface RoleModalProps {
 }
 
 export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, roleId, onClose }) => {
-    const { data, addRole, updateRole } = useOmniStore();
+    const { data, addRole } = useOmniStore();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -38,7 +38,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, roleId, onClose })
         if (!title.trim()) return;
 
         if (roleId) {
-            updateRole(roleId, { title, description, status });
+            alert("Need to update to handle editing a Role");
         } else {
             addRole({ title, description, status: "OPEN" });
         }
