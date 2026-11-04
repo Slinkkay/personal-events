@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { makeGraphQLPersistence } from "./services/graphql-client";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 // --- TYPE DEFINITIONS ---
 export type RoleStatus = "OPEN" | "CLOSED";
@@ -42,10 +43,10 @@ export interface GraphQLConfig {
     useMockFallback: boolean;
 }
 
-type OmniStoreContextType = {
+type OmniStoreState = {
     data: OmniData;
-    gqlConfig: GraphQLConfig;
-    setGqlConfig: React.Dispatch<React.SetStateAction<GraphQLConfig>>;
+
+    fetchCurrent: () => Promise<void>;
 
     // Role Actions
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => void;
@@ -86,8 +87,6 @@ const DEFAULT_GQL_CONFIG: GraphQLConfig = {
 };
 
 // --- CONTEXT CREATION ---
-const OmniStoreContext = createContext<OmniStoreContextType | null>(null);
-
 const persistence: OmniStorePersistence = makeGraphQLPersistence({
     endpoint: "http://localhost:3000/graphql",
     authToken: "your-token-here",
@@ -96,110 +95,96 @@ const persistence: OmniStorePersistence = makeGraphQLPersistence({
     },
 });
 
-export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [data, setData] = useState<OmniData>(() => {
-        return {
-            requests: [],
-            responsibilities: [],
-            roles: [],
-        };
-    });
+export const useOmniStore = create<OmniStoreState>()(
+    devtools(
+        (setState, getState) => {
+            // --- FETCH DATA FROM GRAPHQL ---
+            const fetchData = async (source?: any) => {
+                try {
+                    const result = await persistence.getCurrentState();
+                    source = source === undefined ? "Fetch Result" : source;
+                    setState(
+                        {
+                            data: result,
+                        },
+                        undefined,
+                        source,
+                    );
+                } catch (err) {
+                    console.error("GraphQL Fetch Failed:", err);
+                }
+            };
 
-    const [gqlConfig, setGqlConfig] = useState<GraphQLConfig>(() => {
-        const config = localStorage.getItem("omnitrack_gql_config");
-        return config ? JSON.parse(config) : DEFAULT_GQL_CONFIG;
-    });
+            // --- MUTATION METHODS ---
+            const addRole = async (roleInput: Omit<Role, "id" | "createdAt"> & { id?: string }) => {
+                try {
+                    await persistence.addRole(roleInput);
+                    await fetchData();
+                } catch (err: any) {
+                    console.error(err);
+                }
+            };
 
-    // --- FETCH DATA FROM GRAPHQL ---
-    const fetchData = useCallback(async () => {
-        try {
-            const result = await persistence.getCurrentState();
-            setData(result);
-        } catch (err: any) {
-            console.error("GraphQL Fetch Failed:", err);
+            const deleteRole = async (id: string) => {
+                // Local removal (no delete mutation provided in schema)
+                await persistence.deleteRole(id);
+                await fetchData();
+            };
 
-            if (!gqlConfig.useMockFallback) {
-                setData({ roles: [], responsibilities: [], requests: [] });
-            }
-        }
-    }, [gqlConfig]);
+            const updateRequestStatus = async (id: string, newStatus: RequestStatus) => {
+                try {
+                    await persistence.updateRequestStatus(id, newStatus);
+                    await fetchData();
+                } catch (err: any) {
+                    console.error("updateRequestStatus Mutation Failed:", err);
+                }
+            };
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+            const addResponsibility = async (respInput: Omit<Responsibility, "id"> & { id?: string }) => {
+                try {
+                    await persistence.addResponsibility(respInput);
+                    await fetchData();
+                } catch (err) {
+                    console.error("addResponsibility Mutation Failed:", err);
+                }
+            };
 
-    // --- MUTATION METHODS ---
-    const addRole = async (roleInput: Omit<Role, "id" | "createdAt"> & { id?: string }) => {
-        try {
-            await persistence.addRole(roleInput);
-            await fetchData();
-        } catch (err: any) {
-            console.error(err);
-        }
-    };
+            const closeResponsibility = async (id: string) => {
+                await persistence.updateResponsibilityStatus(id, "CLOSED");
+                await fetchData({
+                    type: "closeResponsibility",
+                    id,
+                });
+            };
 
-    const deleteRole = async (id: string) => {
-        // Local removal (no delete mutation provided in schema)
-        await persistence.deleteRole(id);
-        await fetchData();
-    };
+            // 2. Add Actions inside OmniStoreProvider:
+            const addRequest = async (reqInput: Omit<RequestItem, "id"> & { id?: string }) => {
+                try {
+                    await persistence.addRequest(reqInput);
+                    await fetchData();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
 
-    const updateRequestStatus = async (id: string, newStatus: RequestStatus) => {
-        try {
-            await persistence.updateRequestStatus(id, newStatus);
-            await fetchData();
-        } catch (err: any) {
-            console.error("updateRequestStatus Mutation Failed:", err);
-        }
-    };
-
-    const addResponsibility = async (respInput: Omit<Responsibility, "id"> & { id?: string }) => {
-        try {
-            await persistence.addResponsibility(respInput);
-            await fetchData();
-        } catch (err) {
-            console.error("addResponsibility Mutation Failed:", err);
-        }
-    };
-
-    const closeResponsibility = async (id: string) => {
-        await persistence.updateResponsibilityStatus(id, "CLOSED");
-        await fetchData();
-    };
-
-    // 2. Add Actions inside OmniStoreProvider:
-    const addRequest = async (reqInput: Omit<RequestItem, "id"> & { id?: string }) => {
-        try {
-            await persistence.addRequest(reqInput);
-            await fetchData();
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    return (
-        <OmniStoreContext.Provider
-            value={{
-                data,
-                gqlConfig,
-                setGqlConfig,
+            return {
+                data: {
+                    requests: [],
+                    responsibilities: [],
+                    roles: [],
+                },
+                fetchCurrent: fetchData,
                 addRole,
                 deleteRole,
                 closeResponsibility,
                 updateRequestStatus,
                 addResponsibility,
                 addRequest,
-            }}
-        >
-            {children}
-        </OmniStoreContext.Provider>
-    );
-};
-
-export const useOmniStore = (): OmniStoreContextType => {
-    const context = useContext(OmniStoreContext);
-    if (!context) {
-        throw new Error("useOmniStore must be used within an OmniStoreProvider");
-    }
-    return context;
-};
+            };
+        },
+        {
+            name: "Tracker-Store",
+            enabled: true,
+        },
+    ),
+);

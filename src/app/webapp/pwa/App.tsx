@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { OmniStoreProvider } from "./useOmniStore";
 import { Header } from "./components/Header";
 import { HierarchyView } from "./HierarchyView";
 import { RequestsView } from "./RequestsView";
 import { RoleModal } from "./components/RoleModal";
 import { ResponsibilityModal } from "./components/ResponsibilityModal";
 import { RequestModal } from "./components/RequestModal";
+import { AppInitializer } from "@/app/webapp/pwa/AppInit";
 
 export default function App() {
     const [activeTab, setActiveTab] = useState<"hierarchy" | "requests">("hierarchy");
@@ -34,40 +34,39 @@ export default function App() {
     };
 
     return (
-        <OmniStoreProvider>
-            <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
-                <Header
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                    onOpenAddRole={handleOpenAddRole}
-                    onOpenAddRequest={handleOpenAddReq}
-                />
+        <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
+            <AppInitializer></AppInitializer>
+            <Header
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                onOpenAddRole={handleOpenAddRole}
+                onOpenAddRequest={handleOpenAddReq}
+            />
 
-                <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    {activeTab === "hierarchy" ? (
-                        <HierarchyView
-                            onOpenAddRoleModal={handleOpenAddRole}
-                            onOpenAddRespModal={handleOpenAddResp}
-                            onOpenAddReqModal={handleOpenAddReq}
-                        />
-                    ) : (
-                        <RequestsView />
-                    )}
-                </main>
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                {activeTab === "hierarchy" ? (
+                    <HierarchyView
+                        onOpenAddRoleModal={handleOpenAddRole}
+                        onOpenAddRespModal={handleOpenAddResp}
+                        onOpenAddReqModal={handleOpenAddReq}
+                    />
+                ) : (
+                    <RequestsView />
+                )}
+            </main>
 
-                {/* Global Modals */}
-                <RoleModal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} />
-                <ResponsibilityModal
-                    isOpen={isRespModalOpen}
-                    defaultRoleId={defaultRoleId}
-                    onClose={() => setIsRespModalOpen(false)}
-                />
-                <RequestModal
-                    isOpen={isReqModalOpen}
-                    defaultResponsibilityId={defaultRespId}
-                    onClose={() => setIsReqModalOpen(false)}
-                />
-            </div>
-        </OmniStoreProvider>
+            {/* Global Modals */}
+            <RoleModal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)} />
+            <ResponsibilityModal
+                isOpen={isRespModalOpen}
+                defaultRoleId={defaultRoleId}
+                onClose={() => setIsRespModalOpen(false)}
+            />
+            <RequestModal
+                isOpen={isReqModalOpen}
+                defaultResponsibilityId={defaultRespId}
+                onClose={() => setIsReqModalOpen(false)}
+            />
+        </div>
     );
 }
