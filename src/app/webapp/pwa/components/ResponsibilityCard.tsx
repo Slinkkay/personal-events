@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Responsibility, RequestItem, RequestStatus, RespStatus } from "../useOmniStore";
+import React from "react";
+import { Responsibility, RequestItem, useOmniStore } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { RequestCard } from "./RequestCard";
-import { ChevronRight, ChevronDown, Plus, Edit3, Trash2, FileText } from "lucide-react";
+import { ChevronRight, ChevronDown, Plus, Edit3, Trash2, FileText, Archive } from "lucide-react";
 
 interface ResponsibilityCardProps {
     responsibility: Responsibility;
@@ -11,7 +11,6 @@ interface ResponsibilityCardProps {
     onToggleExpand: (id: string) => void;
     onAddRequest?: (responsibilityId: string) => void; // Pass ID back up
     onEdit?: (id: string) => void;
-    onDelete?: (id: string) => void;
 }
 
 export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
@@ -20,9 +19,10 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
     isExpanded,
     onToggleExpand,
     onEdit,
-    onDelete,
     onAddRequest,
 }) => {
+    const { closeResponsibility } = useOmniStore();
+
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ml-0 sm:ml-4 transition-all">
             {/* Responsibility Header Bar */}
@@ -58,15 +58,13 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                             <Edit3 className="w-3.5 h-3.5" />
                         </button>
                     )}
-                    {onDelete && (
-                        <button
-                            onClick={() => onDelete(responsibility.id)}
-                            title="Delete Responsibility"
-                            className="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200"
-                        >
-                            <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                    )}
+                    <button
+                        onClick={() => closeResponsibility(responsibility.id)}
+                        title="Close Responsibility"
+                        className="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200"
+                    >
+                        <Archive className="w-3.5 h-3.5" />
+                    </button>
                     {onAddRequest && (
                         <button
                             onClick={(e) => {

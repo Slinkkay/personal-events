@@ -53,7 +53,7 @@ type OmniStoreContextType = {
 
     // Responsibility Actions (New Types)
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => void;
-    deleteResponsibility: (id: string) => void;
+    closeResponsibility: (id: string) => void;
 
     // Request Actions
     updateRequestStatus: (id: string, newStatus: RequestStatus) => void;
@@ -65,8 +65,9 @@ export type OmniStorePersistence = {
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => Promise<void>;
     deleteRole: (id: string) => Promise<void>;
 
-    // Responsibility Actions (New Types)
+    // Responsibility Actions
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => Promise<void>;
+    updateResponsibilityStatus: (id: string, status: string) => Promise<void>;
     deleteResponsibility: (id: string) => Promise<void>;
 
     // Request Actions
@@ -78,78 +79,11 @@ export type OmniStorePersistence = {
     getCurrentState: () => Promise<OmniData>;
 };
 
-// --- DEFAULT INITIAL STATE ---
-const DEFAULT_DATA: OmniData = {
-    roles: [
-        {
-            id: "role-1",
-            title: "Tech Lead for Team A",
-            description: "Managing engineering deliverables [Google](https://www.google.com)...",
-            status: "OPEN",
-            createdAt: "2026-01-10",
-        },
-        {
-            id: "role-2",
-            title: "Homeowner",
-            description: "Maintaining property value...",
-            status: "OPEN",
-            createdAt: "2026-02-01",
-        },
-    ],
-    responsibilities: [
-        {
-            id: "resp-1",
-            roleId: "role-1",
-            title: "Lead for Feature X Development",
-            description: "Drive end-to-end design...",
-            status: "OPEN",
-        },
-    ],
-    requests: [
-        {
-            id: "req-1",
-            responsibilityId: "resp-1",
-            description: "Complete API Design Document\nDraft the OpenAPI spec.",
-            dueDate: "2026-11-02",
-            status: "IN_PROGRESS",
-        },
-    ],
-};
-
 const DEFAULT_GQL_CONFIG: GraphQLConfig = {
     endpoint: "http://localhost:3000/graphql",
     authToken: "",
     useMockFallback: true,
 };
-
-// --- HELPER FUNCTION FOR GRAPHQL FETCHING ---
-async function fetchGraphQL<T>(
-    config: GraphQLConfig,
-    query: string,
-    variables: Record<string, unknown> = {},
-): Promise<T> {
-    const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-    };
-
-    if (config.authToken) {
-        headers["Authorization"] = `Bearer ${config.authToken}`;
-    }
-
-    const response = await fetch(config.endpoint, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ query, variables }),
-    });
-
-    const result = await response.json();
-
-    if (result.errors && result.errors.length > 0) {
-        throw new Error(result.errors[0].message);
-    }
-
-    return result.data as T;
-}
 
 // --- CONTEXT CREATION ---
 const OmniStoreContext = createContext<OmniStoreContextType | null>(null);
@@ -176,25 +110,17 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
         return config ? JSON.parse(config) : DEFAULT_GQL_CONFIG;
     });
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-
     // --- FETCH DATA FROM GRAPHQL ---
     const fetchData = useCallback(async () => {
-        setLoading(true);
-        setError(null);
         try {
             const result = await persistence.getCurrentState();
             setData(result);
         } catch (err: any) {
             console.error("GraphQL Fetch Failed:", err);
-            setError(err.message || "Failed to fetch data from GraphQL endpoint");
 
             if (!gqlConfig.useMockFallback) {
                 setData({ roles: [], responsibilities: [], requests: [] });
             }
-        } finally {
-            setLoading(false);
         }
     }, [gqlConfig]);
 
@@ -236,8 +162,9 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
     };
 
-    const deleteResponsibility = async (id: string) => {
-        await persistence.deleteResponsibility(id);
+    const closeResponsibility = async (id: string) => {
+        await persistence.updateResponsibilityStatus(id, "CLOSED");
+        await fetchData();
     };
 
     // 2. Add Actions inside OmniStoreProvider:
@@ -258,7 +185,7 @@ export const OmniStoreProvider: React.FC<{ children: ReactNode }> = ({ children 
                 setGqlConfig,
                 addRole,
                 deleteRole,
-                deleteResponsibility,
+                closeResponsibility,
                 updateRequestStatus,
                 addResponsibility,
                 addRequest,

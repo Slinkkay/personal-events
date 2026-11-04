@@ -1,7 +1,7 @@
 import React from "react";
 import { useOmniStore, Role, Responsibility, RequestItem } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
-import { ResponsibilityCard } from "./ResponsibilityCard";
+import { ResponsibilityList } from "./ResponsibilityList";
 import { ChevronRight, ChevronDown, Archive, RotateCcw, Trash2, FileText, Plus } from "lucide-react";
 
 interface RoleViewProps {
@@ -28,11 +28,13 @@ export const RoleView: React.FC<RoleViewProps> = ({
     onAddRequest,
 }) => {
     // Directly consume actions from the store instead of receiving them via props
-    const { deleteResponsibility, deleteRole } = useOmniStore();
+    const { deleteRole } = useOmniStore();
 
     const handleRoleDelete = () => {
         deleteRole(role.id);
     };
+
+    const visibleResponsibilities = responsibilities.filter((res) => res.status == "OPEN");
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all">
@@ -51,7 +53,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
                             <StatusBadge type="role" status={role.status} />
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                            Created: {role.createdAt} • {responsibilities.length} Responsibilities
+                            Created: {role.createdAt} • {visibleResponsibilities.length} Responsibilities
                         </p>
                     </div>
                 </div>
@@ -98,31 +100,13 @@ export const RoleView: React.FC<RoleViewProps> = ({
                     </div>
 
                     {/* Responsibilities Subsection */}
-                    <div className="space-y-4">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                            Responsibilities ({responsibilities.length})
-                        </h4>
-                        {responsibilities.length === 0 ? (
-                            <p className="text-xs text-slate-400 italic">No responsibilities added yet.</p>
-                        ) : (
-                            responsibilities.map((resp) => {
-                                const isRespExpanded = expandedResp.has(resp.id);
-                                const respRequests = requests.filter((req) => req.responsibilityId === resp.id);
-
-                                return (
-                                    <ResponsibilityCard
-                                        key={resp.id}
-                                        responsibility={resp}
-                                        requests={respRequests}
-                                        isExpanded={isRespExpanded}
-                                        onToggleExpand={onToggleRespExpand}
-                                        onAddRequest={onAddRequest}
-                                        onDelete={deleteResponsibility}
-                                    />
-                                );
-                            })
-                        )}
-                    </div>
+                    <ResponsibilityList
+                        responsibilities={visibleResponsibilities}
+                        requests={requests}
+                        expandedResp={expandedResp}
+                        onToggleRespExpand={onToggleRespExpand}
+                        onAddRequest={onAddRequest}
+                    />
                 </div>
             )}
         </div>

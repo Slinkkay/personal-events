@@ -1,22 +1,4 @@
-import { Role, Responsibility, RequestItem, RequestStatus, OmniData } from "../useOmniStore";
-
-export type OmniStorePersistence = {
-    // Role Actions
-    addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => Promise<void>;
-    deleteRole: (id: string) => Promise<void>;
-
-    // Responsibility Actions (New Types)
-    addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => Promise<void>;
-    deleteResponsibility: (id: string) => Promise<void>;
-
-    // Request Actions
-    updateRequestStatus: (id: string, newStatus: RequestStatus) => Promise<void>;
-    addRequest: (req: Omit<RequestItem, "id"> & { id?: string }) => Promise<void>;
-    deleteRequest: (id: string) => Promise<void>;
-
-    // Current State
-    getCurrentState: () => Promise<OmniData>;
-};
+import { Role, Responsibility, RequestItem, RequestStatus, OmniData, OmniStorePersistence } from "../useOmniStore";
 
 export type GraphQLPersistenceConfig = {
     endpoint: string;
@@ -219,6 +201,19 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             await executeQuery(q, {
                 responsibilityId: id,
                 status: "CLOSED",
+            });
+        },
+
+        async updateResponsibilityStatus(id: string, status: string): Promise<void> {
+            const q = `
+              mutation UpdateRespStatus($responsibilityId: String, $status: String) {
+                responsibilityUpdateStatus(responsibilityId: $responsibilityId, status: $status)
+              }
+            `;
+
+            await executeQuery(q, {
+                responsibilityId: id,
+                status,
             });
         },
 
