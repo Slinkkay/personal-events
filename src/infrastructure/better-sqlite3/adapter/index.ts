@@ -13,4 +13,5 @@ export * from "./responsibility/get-responsibility-from-role";
 export * from "./request/update-request-status";
 export * from "./role/update-role-description";
 export * from "./role/update-role-name";
+export * from "./role/update-role-status";
 export * from "./responsibility/update-responsibility-status";

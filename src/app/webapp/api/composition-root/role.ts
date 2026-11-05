@@ -13,6 +13,7 @@ export function makeGraphQLRoleRoot(root: CompositionRoot): GraphQLRoleRoot {
             root.domain.role.getCreateRole(),
             root.domain.role.getUpdateRoleDescription(),
             root.domain.role.getUpdateRoleName(),
+            root.domain.role.getUpdateRoleStatus(),
         ),
     );
 
