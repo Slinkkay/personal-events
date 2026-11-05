@@ -4,6 +4,7 @@
     "semi": true,
     "printWidth": 120,
     "arrowParens": "always",
+    "endOfLine": "lf",
     "overrides": [
         {
             "files": "*.yaml",
