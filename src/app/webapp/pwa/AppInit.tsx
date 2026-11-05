@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useOmniStore } from "./useOmniStore";
 
 export function AppInitializer() {

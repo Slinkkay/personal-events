@@ -150,7 +150,7 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
-        async deleteRole(id: string): Promise<void> {
+        async closeRole(id: string): Promise<void> {
             const q = `
               mutation UpdateRoleStatus($roleId: String, $status: String) {
                 roleUpdateStatus(roleId: $roleId, status: $status)

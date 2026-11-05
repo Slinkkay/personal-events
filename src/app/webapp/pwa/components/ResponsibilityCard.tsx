@@ -2,7 +2,7 @@ import React from "react";
 import { Responsibility, RequestItem, useOmniStore } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { RequestCard } from "./RequestCard";
-import { ChevronRight, ChevronDown, Plus, Edit3, Trash2, FileText, Archive } from "lucide-react";
+import { ChevronRight, ChevronDown, Plus, Edit3, FileText, Archive } from "lucide-react";
 
 interface ResponsibilityCardProps {
     responsibility: Responsibility;

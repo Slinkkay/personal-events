@@ -50,7 +50,7 @@ type OmniStoreState = {
 
     // Role Actions
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => void;
-    deleteRole: (id: string) => void;
+    closeRole: (id: string) => void;
 
     // Responsibility Actions (New Types)
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => void;
@@ -64,7 +64,7 @@ type OmniStoreState = {
 export type OmniStorePersistence = {
     // Role Actions
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => Promise<void>;
-    deleteRole: (id: string) => Promise<void>;
+    closeRole: (id: string) => Promise<void>;
 
     // Responsibility Actions
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => Promise<void>;
@@ -78,12 +78,6 @@ export type OmniStorePersistence = {
 
     // Current State
     getCurrentState: () => Promise<OmniData>;
-};
-
-const DEFAULT_GQL_CONFIG: GraphQLConfig = {
-    endpoint: "http://localhost:3000/graphql",
-    authToken: "",
-    useMockFallback: true,
 };
 
 // --- CONTEXT CREATION ---
@@ -125,9 +119,9 @@ export const useOmniStore = create<OmniStoreState>()(
                 }
             };
 
-            const deleteRole = async (id: string) => {
+            const closeRole = async (id: string) => {
                 // Local removal (no delete mutation provided in schema)
-                await persistence.deleteRole(id);
+                await persistence.closeRole(id);
                 await fetchData();
             };
 
@@ -175,7 +169,7 @@ export const useOmniStore = create<OmniStoreState>()(
                 },
                 fetchCurrent: fetchData,
                 addRole,
-                deleteRole,
+                closeRole,
                 closeResponsibility,
                 updateRequestStatus,
                 addResponsibility,

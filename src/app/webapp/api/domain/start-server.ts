@@ -66,6 +66,7 @@ export function makeStartServer(
                     roleCreate(name: String, description: String): IdResult!
                     roleUpdateDescription(roleId: String, description: String): Boolean!
                     roleUpdateName(roleId: String, name: String): Boolean!
+                    roleUpdateStatus(roleId: String, status: String): Boolean!
                 }
             `;
 
