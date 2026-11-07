@@ -1,16 +1,17 @@
 import React from "react";
 import { Layers, FolderTree, CheckSquare, Plus, FolderPlus } from "lucide-react";
+import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 type ActiveTab = "hierarchy" | "requests";
 
 interface HeaderProps {
     activeTab: ActiveTab;
     setActiveTab: (tab: ActiveTab) => void;
-    onOpenAddRole: () => void;
-    onOpenAddRequest: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenAddRole, onOpenAddRequest }) => {
+export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
+    const { showRole, showRequest } = useDialogStore();
+
     return (
         <header className="bg-slate-900 text-white shadow-md border-b border-slate-800 shrink-0">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -58,13 +59,13 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenA
 
                     {/* Flattened Quick Add Buttons */}
                     <button
-                        onClick={onOpenAddRole}
+                        onClick={() => showRole()}
                         className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
                     >
                         <FolderPlus className="w-4 h-4" /> New Role
                     </button>
                     <button
-                        onClick={onOpenAddRequest}
+                        onClick={() => showRequest()}
                         className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm border border-slate-700 transition-all flex items-center gap-1.5 active:scale-95"
                     >
                         <Plus className="w-4 h-4" /> New Request

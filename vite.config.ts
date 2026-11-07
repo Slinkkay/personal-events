@@ -2,6 +2,7 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
 import * as fs from "fs";
+import checker from "vite-plugin-checker";
 
 export default defineConfig({
     build: {
@@ -13,6 +14,9 @@ export default defineConfig({
         },
     },
     plugins: [
+        checker({
+            typescript: true,
+        }),
         {
             name: "move-html-to-root",
             closeBundle() {

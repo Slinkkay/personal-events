@@ -3,19 +3,16 @@ import { useOmniStore } from "./useOmniStore";
 import { SearchBar } from "./components/common";
 import { RoleView } from "./components/RoleView";
 import { Plus } from "lucide-react";
+import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface HierarchyViewProps {
-    onOpenAddRoleModal?: () => void;
     onOpenAddRespModal?: () => void;
     onOpenAddReqModal?: () => void;
 }
 
-export const HierarchyView: React.FC<HierarchyViewProps> = ({
-    onOpenAddRoleModal,
-    onOpenAddRespModal,
-    onOpenAddReqModal,
-}) => {
+export const HierarchyView: React.FC<HierarchyViewProps> = ({ onOpenAddRespModal, onOpenAddReqModal }) => {
     const { data } = useOmniStore();
+    const { showRole } = useDialogStore();
     const [searchQuery, setSearchQuery] = useState("");
     const [showClosed, setShowClosed] = useState(false);
     const [expandedRoles, setExpandedRoles] = useState<Set<string>>(new Set());
@@ -73,7 +70,7 @@ export const HierarchyView: React.FC<HierarchyViewProps> = ({
                     </label>
 
                     <button
-                        onClick={onOpenAddRoleModal}
+                        onClick={() => showRole()}
                         className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
                     >
                         <Plus className="w-4 h-4" /> Add Role
