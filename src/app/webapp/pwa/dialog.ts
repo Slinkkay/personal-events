@@ -31,7 +31,7 @@ type RoleCommand =
           type: "create";
       };
 
-export type DialogState = {
+export type DialogStore = {
     data: {
         request: {
             id?: string;
@@ -55,7 +55,7 @@ export type DialogState = {
     closeResponsibility: () => void;
 };
 
-export const useDialogStore = create<DialogState>((setState, getState, store) => {
+export const useDialogStore = create<DialogStore>((setState) => {
     const data = {
         request: null,
         responsibility: null,
@@ -63,7 +63,6 @@ export const useDialogStore = create<DialogState>((setState, getState, store) =>
     };
 
     const showRequest = (command: RequestCommand) => {
-        console.log(command);
         switch (command.type) {
             case "create":
                 setState({
@@ -91,7 +90,6 @@ export const useDialogStore = create<DialogState>((setState, getState, store) =>
     };
 
     const showRole = (command: RoleCommand) => {
-        console.log("Role Show");
         switch (command.type) {
             case "edit":
                 setState({
@@ -144,7 +142,6 @@ export const useDialogStore = create<DialogState>((setState, getState, store) =>
     };
 
     const generalClose = () => {
-        console.log("General Close");
         setState({
             data: {
                 role: null,
