@@ -31,20 +31,30 @@ type RoleCommand =
           type: "create";
       };
 
-export type DialogStore = {
-    data: {
-        request: {
-            id?: string;
-            responsibilityId: string;
-        } | null;
-        role: {
-            id?: string;
-        } | null;
-        responsibility: {
-            id?: string;
-            roleId: string;
-        } | null;
+export type DialogState = {
+    request: {
+        id?: string;
+        responsibilityId: string;
+    } | null;
+    role: {
+        id?: string;
+    } | null;
+    responsibility: {
+        id?: string;
+        roleId: string;
+    } | null;
+};
+
+function createNullState(): DialogState {
+    return {
+        request: null,
+        responsibility: null,
+        role: null,
     };
+}
+
+export type DialogStore = {
+    data: DialogState;
     showRequest: (command: RequestCommand) => void;
     closeRequest: () => void;
 
@@ -56,34 +66,28 @@ export type DialogStore = {
 };
 
 export const useDialogStore = create<DialogStore>((setState) => {
-    const data = {
-        request: null,
-        responsibility: null,
-        role: null,
-    };
+    const data = createNullState();
 
     const showRequest = (command: RequestCommand) => {
         switch (command.type) {
             case "create":
                 setState({
                     data: {
+                        ...createNullState(),
                         request: {
                             responsibilityId: command.responsibilityId,
                         },
-                        responsibility: null,
-                        role: null,
                     },
                 });
                 break;
             case "edit":
                 setState({
                     data: {
+                        ...createNullState(),
                         request: {
                             id: command.id,
                             responsibilityId: command.responsibilityId,
                         },
-                        responsibility: null,
-                        role: null,
                     },
                 });
         }
@@ -94,22 +98,21 @@ export const useDialogStore = create<DialogStore>((setState) => {
             case "edit":
                 setState({
                     data: {
+                        ...createNullState(),
                         role: {
                             id: command.id,
                         },
-                        request: null,
-                        responsibility: null,
                     },
                 });
                 break;
-            case "create":
+            case "create": {
                 setState({
                     data: {
+                        ...createNullState(),
                         role: {},
-                        request: null,
-                        responsibility: null,
                     },
                 });
+            }
         }
     };
 
@@ -118,23 +121,21 @@ export const useDialogStore = create<DialogStore>((setState) => {
             case "edit":
                 setState({
                     data: {
-                        request: null,
+                        ...createNullState(),
                         responsibility: {
                             roleId: command.roleId,
                             id: command.id,
                         },
-                        role: null,
                     },
                 });
                 break;
             case "create":
                 setState({
                     data: {
-                        request: null,
+                        ...createNullState(),
                         responsibility: {
                             roleId: command.roleId,
                         },
-                        role: null,
                     },
                 });
                 break;
@@ -143,11 +144,7 @@ export const useDialogStore = create<DialogStore>((setState) => {
 
     const generalClose = () => {
         setState({
-            data: {
-                role: null,
-                responsibility: null,
-                request: null,
-            },
+            data: createNullState(),
         });
     };
 
