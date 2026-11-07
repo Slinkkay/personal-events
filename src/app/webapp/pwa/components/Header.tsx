@@ -1,6 +1,7 @@
 import React from "react";
 import { Layers, FolderTree, CheckSquare, Plus, FolderPlus } from "lucide-react";
-import { useDialogStore } from "@/app/webapp/pwa/dialog";
+import { useDialogStore } from "../dialog";
+import { useOmniStore } from "@/app/webapp/pwa/useOmniStore";
 
 type ActiveTab = "hierarchy" | "requests";
 
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     const { showRole, showRequest } = useDialogStore();
+    const { data } = useOmniStore();
 
     return (
         <header className="bg-slate-900 text-white shadow-md border-b border-slate-800 shrink-0">
@@ -59,13 +61,23 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
                     {/* Flattened Quick Add Buttons */}
                     <button
-                        onClick={() => showRole()}
+                        onClick={() => {
+                            showRole({
+                                type: "create",
+                            });
+                        }}
                         className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
                     >
                         <FolderPlus className="w-4 h-4" /> New Role
                     </button>
                     <button
-                        onClick={() => showRequest()}
+                        onClick={() => {
+                            const responsibilityId = data.responsibilities[0].id;
+                            showRequest({
+                                type: "create",
+                                responsibilityId,
+                            });
+                        }}
                         className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm border border-slate-700 transition-all flex items-center gap-1.5 active:scale-95"
                     >
                         <Plus className="w-4 h-4" /> New Request

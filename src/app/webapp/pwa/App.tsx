@@ -6,29 +6,13 @@ import { RoleModal } from "./components/RoleModal";
 import { ResponsibilityModal } from "./components/ResponsibilityModal";
 import { RequestModal } from "./components/RequestModal";
 import { AppInitializer } from "@/app/webapp/pwa/AppInit";
-import { useDialogStore } from "@/app/webapp/pwa/dialog";
+import { useDialogStore } from "./dialog";
 
 export default function App() {
     const [activeTab, setActiveTab] = useState<"hierarchy" | "requests">("hierarchy");
 
     // Modal Visibility States
-    const { data, closeRole } = useDialogStore();
-    const [isRespModalOpen, setIsRespModalOpen] = useState(false);
-    const [isReqModalOpen, setIsReqModalOpen] = useState(false);
-
-    // Pre-selection target IDs
-    const [defaultRoleId, setDefaultRoleId] = useState<string | null>(null);
-    const [defaultRespId, setDefaultRespId] = useState<string | null>(null);
-
-    const handleOpenAddResp = (roleId?: string) => {
-        setDefaultRoleId(roleId || null);
-        setIsRespModalOpen(true);
-    };
-
-    const handleOpenAddReq = (respId?: string) => {
-        setDefaultRespId(respId || null);
-        setIsReqModalOpen(true);
-    };
+    const { data, closeRole, closeResponsibility, closeRequest } = useDialogStore();
 
     return (
         <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
@@ -36,25 +20,17 @@ export default function App() {
             <Header activeTab={activeTab} setActiveTab={setActiveTab} />
 
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                {activeTab === "hierarchy" ? (
-                    <HierarchyView onOpenAddRespModal={handleOpenAddResp} onOpenAddReqModal={handleOpenAddReq} />
-                ) : (
-                    <RequestsView />
-                )}
+                {activeTab === "hierarchy" ? <HierarchyView /> : <RequestsView />}
             </main>
 
             {/* Global Modals */}
-            <RoleModal isOpen={data.role} onClose={() => closeRole()} />
+            <RoleModal isOpen={data.role !== null} onClose={() => closeRole()} />
             <ResponsibilityModal
-                isOpen={isRespModalOpen}
-                defaultRoleId={defaultRoleId}
-                onClose={() => setIsRespModalOpen(false)}
+                isOpen={data.responsibility !== null}
+                defaultRoleId={data.responsibility?.roleId}
+                onClose={() => closeResponsibility()}
             />
-            <RequestModal
-                isOpen={isReqModalOpen}
-                defaultResponsibilityId={defaultRespId}
-                onClose={() => setIsReqModalOpen(false)}
-            />
+            <RequestModal isOpen={data.request !== null} onClose={() => closeRequest()} />
         </div>
     );
 }

@@ -3,13 +3,13 @@ import { Responsibility, RequestItem, useOmniStore } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { RequestCard } from "./RequestCard";
 import { ChevronRight, ChevronDown, Plus, Edit3, FileText, Archive } from "lucide-react";
+import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface ResponsibilityCardProps {
     responsibility: Responsibility;
     requests: RequestItem[];
     isExpanded: boolean;
     onToggleExpand: (id: string) => void;
-    onAddRequest?: (responsibilityId: string) => void; // Pass ID back up
     onEdit?: (id: string) => void;
 }
 
@@ -19,9 +19,9 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
     isExpanded,
     onToggleExpand,
     onEdit,
-    onAddRequest,
 }) => {
     const { closeResponsibility } = useOmniStore();
+    const { showRequest } = useDialogStore();
 
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ml-0 sm:ml-4 transition-all">
@@ -65,18 +65,19 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                     >
                         <Archive className="w-3.5 h-3.5" />
                     </button>
-                    {onAddRequest && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onAddRequest(responsibility.id); // Triggers request modal pre-linked to this responsibility
-                            }}
-                            title="Add Request"
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm"
-                        >
-                            <Plus className="w-3 h-3" /> Add Request
-                        </button>
-                    )}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            showRequest({
+                                type: "create",
+                                responsibilityId: responsibility.id,
+                            });
+                        }}
+                        title="Add Request"
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm"
+                    >
+                        <Plus className="w-3 h-3" /> Add Request
+                    </button>
                 </div>
             </div>
 

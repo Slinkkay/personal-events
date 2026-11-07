@@ -1,72 +1,155 @@
 import { create } from "zustand";
 
+type RequestCommand =
+    | {
+          type: "edit";
+          id: string;
+          responsibilityId: string;
+      }
+    | {
+          type: "create";
+          responsibilityId: string;
+      };
+
+type ResponsibilityCommand =
+    | {
+          type: "edit";
+          id: string;
+          roleId: string;
+      }
+    | {
+          type: "create";
+          roleId: string;
+      };
+
+type RoleCommand =
+    | {
+          type: "edit";
+          id: string;
+      }
+    | {
+          type: "create";
+      };
+
 export type DialogState = {
     data: {
-        id: string | undefined;
-        request: boolean;
-        role: boolean;
-        responsibility: boolean;
+        request: {
+            id?: string;
+            responsibilityId: string;
+        } | null;
+        role: {
+            id?: string;
+        } | null;
+        responsibility: {
+            id?: string;
+            roleId: string;
+        } | null;
     };
-    showRequest: (id?: string) => void;
+    showRequest: (command: RequestCommand) => void;
     closeRequest: () => void;
 
-    showRole: (id?: string) => void;
+    showRole: (command: RoleCommand) => void;
     closeRole: () => void;
 
-    showResponsibility: (id?: string) => void;
+    showResponsibility: (command: ResponsibilityCommand) => void;
     closeResponsibility: () => void;
 };
 
 export const useDialogStore = create<DialogState>((setState, getState, store) => {
     const data = {
-        id: undefined,
-        request: false,
-        role: false,
-        responsibility: false,
+        request: null,
+        responsibility: null,
+        role: null,
     };
 
-    const showRequest = (id?: string) => {
-        setState({
-            data: {
-                id,
-                request: true,
-                responsibility: false,
-                role: false,
-            },
-        });
+    const showRequest = (command: RequestCommand) => {
+        console.log(command);
+        switch (command.type) {
+            case "create":
+                setState({
+                    data: {
+                        request: {
+                            responsibilityId: command.responsibilityId,
+                        },
+                        responsibility: null,
+                        role: null,
+                    },
+                });
+                break;
+            case "edit":
+                setState({
+                    data: {
+                        request: {
+                            id: command.id,
+                            responsibilityId: command.responsibilityId,
+                        },
+                        responsibility: null,
+                        role: null,
+                    },
+                });
+        }
     };
 
-    const showRole = (id?: string) => {
+    const showRole = (command: RoleCommand) => {
         console.log("Role Show");
-        setState({
-            data: {
-                id,
-                request: false,
-                responsibility: false,
-                role: true,
-            },
-        });
+        switch (command.type) {
+            case "edit":
+                setState({
+                    data: {
+                        role: {
+                            id: command.id,
+                        },
+                        request: null,
+                        responsibility: null,
+                    },
+                });
+                break;
+            case "create":
+                setState({
+                    data: {
+                        role: {},
+                        request: null,
+                        responsibility: null,
+                    },
+                });
+        }
     };
 
-    const showResponsibility = (id?: string) => {
-        setState({
-            data: {
-                id,
-                request: false,
-                responsibility: false,
-                role: true,
-            },
-        });
+    const showResponsibility = (command: ResponsibilityCommand) => {
+        switch (command.type) {
+            case "edit":
+                setState({
+                    data: {
+                        request: null,
+                        responsibility: {
+                            roleId: command.roleId,
+                            id: command.id,
+                        },
+                        role: null,
+                    },
+                });
+                break;
+            case "create":
+                setState({
+                    data: {
+                        request: null,
+                        responsibility: {
+                            roleId: command.roleId,
+                        },
+                        role: null,
+                    },
+                });
+                break;
+        }
     };
 
     const generalClose = () => {
         console.log("General Close");
         setState({
             data: {
-                id: undefined,
-                request: false,
-                responsibility: false,
-                role: false,
+                role: null,
+                responsibility: null,
+                request: null,
             },
         });
     };

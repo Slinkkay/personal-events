@@ -7,7 +7,6 @@ interface ResponsibilityListProps {
     requests: RequestItem[];
     expandedResp: Set<string>;
     onToggleRespExpand: (id: string) => void;
-    onAddRequest?: (responsibilityId: string) => void;
 }
 
 export const ResponsibilityList: React.FC<ResponsibilityListProps> = ({
@@ -15,7 +14,6 @@ export const ResponsibilityList: React.FC<ResponsibilityListProps> = ({
     requests,
     expandedResp,
     onToggleRespExpand,
-    onAddRequest,
 }) => {
     return (
         <div className="space-y-4">
@@ -36,7 +34,6 @@ export const ResponsibilityList: React.FC<ResponsibilityListProps> = ({
                             requests={respRequests}
                             isExpanded={isRespExpanded}
                             onToggleExpand={onToggleRespExpand}
-                            onAddRequest={onAddRequest}
                         />
                     );
                 })

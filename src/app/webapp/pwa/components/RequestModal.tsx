@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useOmniStore, RequestStatus } from "../useOmniStore";
 import { X, CheckSquare, Edit3, Search, Check } from "lucide-react";
+import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface RequestModalProps {
     isOpen: boolean;
-    requestId?: string | null; // If set, Edit mode. If null, Create mode.
-    defaultResponsibilityId?: string | null; // Pre-selects parent responsibility
     onClose: () => void;
 }
 
-export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, defaultResponsibilityId, onClose }) => {
+export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) => {
     const { data, addRequest } = useOmniStore();
+    const { data: dialogData } = useDialogStore();
 
     const [responsibilityId, setResponsibilityId] = useState("");
     const [description, setDescription] = useState("");
@@ -20,6 +20,8 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
     // Search & Combobox states for parent responsibility selection
     const [respSearchQuery, setRespSearchQuery] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const requestId = dialogData.request?.id;
 
     // Synchronize state on open / edit mode change
     useEffect(() => {
@@ -32,7 +34,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
                 setStatus(existingReq.status);
             }
         } else {
-            const initialRespId = defaultResponsibilityId || data.responsibilities[0]?.id || "";
+            const initialRespId = dialogData.request?.responsibilityId || data.responsibilities[0]?.id || "";
             setResponsibilityId(initialRespId);
             setDescription("");
             setDueDate(new Date().toISOString().split("T")[0]);
@@ -40,7 +42,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, requestId, d
         }
         setRespSearchQuery("");
         setIsDropdownOpen(false);
-    }, [requestId, defaultResponsibilityId, data.requests, data.responsibilities, isOpen]);
+    }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
 
     // Derived selected responsibility label for input display
     const selectedRespLabel = useMemo(() => {

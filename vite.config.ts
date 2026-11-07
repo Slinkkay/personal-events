@@ -7,10 +7,43 @@ import checker from "vite-plugin-checker";
 export default defineConfig({
     build: {
         rollupOptions: {
+            output: {
+                codeSplitting: {
+                    minSize: 20000,
+                    groups: [
+                        {
+                            name: "react-vendor",
+                            test: /node_modules[\\/]react/,
+                            priority: 20,
+                        },
+                        {
+                            name: "ui-vendor",
+                            test: /node_modules[\\/]lucide-react/,
+                            priority: 15,
+                        },
+                        {
+                            name: "vendor",
+                            test: /node_modules/,
+                            priority: 10,
+                        },
+                        {
+                            name: "common",
+                            minShareCount: 2,
+                            minSize: 10000,
+                            priority: 5,
+                        },
+                    ],
+                },
+            },
             input: {
                 // Replace 'custom.html' with your actual file name
                 main: resolve("./src/app/webapp/pwa/index.html"),
             },
+        },
+    },
+    resolve: {
+        alias: {
+            "@": resolve("./src"),
         },
     },
     plugins: [

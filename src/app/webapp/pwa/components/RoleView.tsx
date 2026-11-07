@@ -2,7 +2,8 @@ import React from "react";
 import { useOmniStore, Role, Responsibility, RequestItem } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { ResponsibilityList } from "./ResponsibilityList";
-import { ChevronRight, ChevronDown, Archive, RotateCcw, Trash2, FileText, Plus } from "lucide-react";
+import { ChevronRight, ChevronDown, Archive, RotateCcw, FileText, Plus } from "lucide-react";
+import { useDialogStore } from "../dialog";
 
 interface RoleViewProps {
     role: Role;
@@ -12,8 +13,6 @@ interface RoleViewProps {
     expandedResp: Set<string>;
     onToggleExpand: (id: string) => void;
     onToggleRespExpand: (id: string) => void;
-    onAddResponsibility?: (roleId: string) => void;
-    onAddRequest?: (responsibilityId: string) => void;
 }
 
 export const RoleView: React.FC<RoleViewProps> = ({
@@ -24,11 +23,10 @@ export const RoleView: React.FC<RoleViewProps> = ({
     expandedResp,
     onToggleExpand,
     onToggleRespExpand,
-    onAddResponsibility,
-    onAddRequest,
 }) => {
     // Directly consume actions from the store instead of receiving them via props
     const { closeRole } = useOmniStore();
+    const { showResponsibility } = useDialogStore();
 
     const handleRoleDelete = () => {
         closeRole(role.id);
@@ -60,15 +58,18 @@ export const RoleView: React.FC<RoleViewProps> = ({
 
                 {/* Role Actions (stopPropagation prevents collapsing when clicking buttons) */}
                 <div className="flex items-center gap-1.5 self-end sm:self-center" onClick={(e) => e.stopPropagation()}>
-                    {onAddResponsibility && (
-                        <button
-                            onClick={() => onAddResponsibility(role.id)}
-                            title="Add Responsibility"
-                            className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl text-xs font-medium flex items-center gap-1 transition-all shadow-sm"
-                        >
-                            <Plus className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Add Resp</span>
-                        </button>
-                    )}
+                    <button
+                        onClick={() =>
+                            showResponsibility({
+                                type: "create",
+                                roleId: role.id,
+                            })
+                        }
+                        title="Add Responsibility"
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl text-xs font-medium flex items-center gap-1 transition-all shadow-sm"
+                    >
+                        <Plus className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Add Resp</span>
+                    </button>
                     <button
                         title={role.status === "OPEN" ? "Close Role" : "Reopen Role"}
                         className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-xl transition-all border border-slate-700"
@@ -99,7 +100,6 @@ export const RoleView: React.FC<RoleViewProps> = ({
                         requests={requests}
                         expandedResp={expandedResp}
                         onToggleRespExpand={onToggleRespExpand}
-                        onAddRequest={onAddRequest}
                     />
                 </div>
             )}
