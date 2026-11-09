@@ -98,7 +98,7 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                         {requests.length === 0 ? (
                             <p className="text-xs text-slate-400 italic py-1">No requests created yet.</p>
                         ) : (
-                            requests.map((req) => <RequestCard key={req.id} request={req} />)
+                            requests.map((req) => <RequestCard key={req.id} requestId={req.id} />)
                         )}
                     </div>
                 </div>

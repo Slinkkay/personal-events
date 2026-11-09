@@ -4,39 +4,24 @@ import { SearchBar, getDueDateStatus } from "./components/common";
 import { RequestCard } from "./components/RequestCard";
 
 export const RequestsView: React.FC = () => {
-    const { data, updateRequestStatus } = useOmniStore();
+    const { data } = useOmniStore();
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
-    const [roleFilter, setRoleFilter] = useState("ALL");
 
-    const enrichedRequests = data.requests.flatMap((req) => {
-        const resp = data.responsibilities.find((r) => r.id === req.responsibilityId);
-        if (!resp) return [];
-        const role = data.roles.find((r) => r.id === resp.roleId);
-        if (!role) return [];
-        return [{ req, resp, role }];
-    });
-
-    const filtered = enrichedRequests.filter(({ req, resp, role }) => {
+    const filtered = data.requests.filter((req) => {
         if (statusFilter !== "ALL" && req.status !== statusFilter) return false;
-        if (roleFilter !== "ALL" && role.id !== roleFilter) return false;
-        if (
-            searchQuery.trim() &&
-            !req.description.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !resp.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !role.title.toLowerCase().includes(searchQuery.toLowerCase())
-        ) {
+        if (searchQuery.trim() && !req.description.toLowerCase().includes(searchQuery.toLowerCase())) {
             return false;
         }
         return true;
     });
 
     filtered.sort((a, b) => {
-        const statA = getDueDateStatus(a.req.dueDate, a.req.status);
-        const statB = getDueDateStatus(b.req.dueDate, b.req.status);
+        const statA = getDueDateStatus(a.dueDate, a.status);
+        const statB = getDueDateStatus(b.dueDate, b.status);
         return statA.urgency !== statB.urgency
             ? statA.urgency - statB.urgency
-            : new Date(a.req.dueDate).getTime() - new Date(b.req.dueDate).getTime();
+            : new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     });
 
     return (
@@ -63,8 +48,8 @@ export const RequestsView: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">
-                {filtered.map(({ req, resp, role }) => (
-                    <RequestCard key={req.id} request={req} roleTitle={role.title} respTitle={resp.title} />
+                {filtered.map((req) => (
+                    <RequestCard key={req.id} requestId={req.id} roleTag={true} />
                 ))}
             </div>
         </div>

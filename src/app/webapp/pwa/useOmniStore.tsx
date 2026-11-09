@@ -37,6 +37,61 @@ export interface OmniData {
     requests: RequestItem[];
 }
 
+export type ECSData = {
+    IsRole: { [key: string]: boolean };
+    IsResponsibility: { [key: string]: boolean };
+    isRequest: { [key: string]: boolean };
+    HasRequest: { [key: string]: string[] };
+    HasResponsibility: { [key: string]: string[] };
+    PartOf: { [key: string]: string };
+    Request: { [key: string]: RequestItem };
+    Responsibility: { [key: string]: Responsibility };
+    Role: { [key: string]: Role };
+};
+
+export function generateECSData(data: OmniData): ECSData {
+    const ecs: ECSData = {
+        IsRole: {},
+        IsResponsibility: {},
+        isRequest: {},
+        HasRequest: {},
+        HasResponsibility: {},
+        PartOf: {},
+        Request: {},
+        Responsibility: {},
+        Role: {},
+    };
+
+    data.roles.forEach((role) => {
+        ecs.Role[role.id] = role;
+        ecs.IsRole[role.id] = true;
+    });
+
+    data.responsibilities.forEach((resp) => {
+        ecs.Responsibility[resp.id] = resp;
+        ecs.IsResponsibility[resp.id] = true;
+        ecs.PartOf[resp.id] = resp.roleId;
+
+        if (!ecs.HasResponsibility[resp.roleId]) {
+            ecs.HasResponsibility[resp.roleId] = [];
+        }
+        ecs.HasResponsibility[resp.roleId].push(resp.id);
+    });
+
+    data.requests.forEach((req) => {
+        ecs.Request[req.id] = req;
+        ecs.isRequest[req.id] = true;
+        ecs.PartOf[req.id] = req.responsibilityId;
+
+        if (!ecs.HasRequest[req.responsibilityId]) {
+            ecs.HasRequest[req.responsibilityId] = [];
+        }
+        ecs.HasRequest[req.responsibilityId].push(req.id);
+    });
+
+    return ecs;
+}
+
 export interface GraphQLConfig {
     endpoint: string;
     authToken: string;
@@ -45,6 +100,7 @@ export interface GraphQLConfig {
 
 type OmniStoreState = {
     data: OmniData;
+    ecsData: ECSData;
 
     fetchCurrent: () => Promise<void>;
 
@@ -97,9 +153,11 @@ export const useOmniStore = create<OmniStoreState>()(
                 try {
                     const result = await persistence.getCurrentState();
                     source = source === undefined ? "Fetch Result" : source;
+                    const ecsData = generateECSData(result);
                     setState(
                         {
                             data: result,
+                            ecsData,
                         },
                         undefined,
                         source,
@@ -166,6 +224,17 @@ export const useOmniStore = create<OmniStoreState>()(
                     requests: [],
                     responsibilities: [],
                     roles: [],
+                },
+                ecsData: {
+                    IsRole: {},
+                    IsResponsibility: {},
+                    isRequest: {},
+                    HasRequest: {},
+                    HasResponsibility: {},
+                    PartOf: {},
+                    Request: {},
+                    Responsibility: {},
+                    Role: {},
                 },
                 fetchCurrent: fetchData,
                 addRole,

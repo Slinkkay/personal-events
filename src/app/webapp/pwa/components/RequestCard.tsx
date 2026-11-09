@@ -4,17 +4,32 @@ import { StatusBadge, StatusSelect } from "./common";
 import { Edit3, Trash2 } from "lucide-react";
 
 interface RequestCardProps {
-    request: RequestItem;
-    roleTitle?: string;
-    respTitle?: string;
+    requestId: string;
+    roleTag?: boolean;
     onEdit?: (id: string) => void;
 }
 
-export const RequestCard: React.FC<RequestCardProps> = ({ request, roleTitle, respTitle, onEdit }) => {
-    const { updateRequestStatus } = useOmniStore();
+export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, onEdit }) => {
+    const { updateRequestStatus, ecsData } = useOmniStore();
+
+    const request = ecsData?.Request[requestId];
+    if (request === undefined) {
+        return <div>No Request</div>;
+    }
+
     const lines = request.description.split("\n");
     const reqTitle = lines[0] || "Untitled Request";
     const reqBody = lines.slice(1).join("\n");
+
+    let roleTitle: string | null = null;
+    let respTitle: string | null = null;
+
+    if (roleTag) {
+        const responsibilityId = ecsData.PartOf[requestId];
+        const roleId = ecsData.PartOf[responsibilityId];
+        roleTitle = ecsData.Role[roleId].title;
+        respTitle = ecsData.Responsibility[responsibilityId].title;
+    }
 
     return (
         <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
@@ -26,7 +41,7 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, roleTitle, re
 
                 {reqBody && <p className="text-[11px] text-slate-600 line-clamp-2">{reqBody}</p>}
 
-                {roleTitle && respTitle && (
+                {roleTag && (
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-0.5">
                         <span className="font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
                             {roleTitle}
