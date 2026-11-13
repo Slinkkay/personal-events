@@ -2,6 +2,7 @@ import React from "react";
 import { RequestItem, RequestStatus, useOmniStore } from "../useOmniStore";
 import { StatusBadge, StatusSelect } from "./common";
 import { Edit3, Trash2 } from "lucide-react";
+import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface RequestCardProps {
     requestId: string;
@@ -11,6 +12,7 @@ interface RequestCardProps {
 
 export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, onEdit }) => {
     const { updateRequestStatus, ecsData } = useOmniStore();
+    const { showRequest } = useDialogStore();
 
     const request = ecsData?.Request[requestId];
     if (request === undefined) {
@@ -20,12 +22,12 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
     const lines = request.description.split("\n");
     const reqTitle = lines[0] || "Untitled Request";
     const reqBody = lines.slice(1).join("\n");
+    const responsibilityId = ecsData.PartOf[requestId];
 
     let roleTitle: string | null = null;
     let respTitle: string | null = null;
 
     if (roleTag) {
-        const responsibilityId = ecsData.PartOf[requestId];
         const roleId = ecsData.PartOf[responsibilityId];
         roleTitle = ecsData.Role[roleId].title;
         respTitle = ecsData.Responsibility[responsibilityId].title;
@@ -57,15 +59,20 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
                     value={request.status}
                     onChange={(newStatus) => updateRequestStatus(request.id, newStatus)}
                 />
-                {onEdit && (
-                    <button
-                        onClick={() => onEdit(request.id)}
-                        className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                        title="Edit Request"
-                    >
-                        <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                )}
+
+                <button
+                    onClick={() =>
+                        showRequest({
+                            type: "edit",
+                            id: request.id,
+                            responsibilityId,
+                        })
+                    }
+                    className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                    title="Edit Request"
+                >
+                    <Edit3 className="w-3.5 h-3.5" />
+                </button>
             </div>
         </div>
     );

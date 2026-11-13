@@ -1,12 +1,403 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useOmniStore, RequestStatus } from "../useOmniStore";
-import { X, CheckSquare, Edit3, Search, Check } from "lucide-react";
+import { X, CheckSquare, Edit3, Search, Check, Lock, Loader2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface RequestModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
+
+interface FieldComponentProps {
+    requestId: string | undefined;
+}
+
+// 1. Responsibility Field Component
+const ResponsibilityField: React.FC<
+    FieldComponentProps & {
+        responsibilityId: string;
+        setResponsibilityId: (id: string) => void;
+        isUnlocked: boolean;
+        onToggleLock: () => void;
+        isAnyLocked: boolean;
+    }
+> = ({ requestId, responsibilityId, setResponsibilityId, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const { data } = useOmniStore();
+    const [respSearchQuery, setRespSearchQuery] = useState("");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [savingField, setSavingField] = useState(false);
+
+    const selectedRespLabel = useMemo(() => {
+        const selectedResp = data.responsibilities.find((r) => r.id === responsibilityId);
+        if (!selectedResp) return "";
+        const parentRole = data.roles.find((ro) => ro.id === selectedResp.roleId);
+        return parentRole ? `${parentRole.title} › ${selectedResp.title}` : selectedResp.title;
+    }, [responsibilityId, data.responsibilities, data.roles]);
+
+    const handleSave = () => {
+        setSavingField(true);
+        setTimeout(() => {
+            // TODO: Update backend/store with new responsibilityId here
+            setSavingField(false);
+            onToggleLock();
+        }, 5000);
+    };
+
+    const isEditMode = Boolean(requestId);
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-1">
+                <label className="font-semibold text-slate-700">Parent Responsibility</label>
+                {isEditMode && (
+                    <div className="flex items-center gap-2">
+                        {isUnlocked ? (
+                            <button
+                                type="button"
+                                onClick={handleSave}
+                                disabled={savingField}
+                                className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] flex items-center gap-1 transition-all disabled:opacity-50"
+                            >
+                                {savingField ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!isAnyLocked) {
+                                        onToggleLock();
+                                        setIsDropdownOpen(true);
+                                        setRespSearchQuery("");
+                                    }
+                                }}
+                                disabled={isAnyLocked}
+                                className="text-slate-400 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-slate-400 flex items-center gap-1 transition-colors text-[11px]"
+                            >
+                                <Lock className="w-3 h-3" /> Locked
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+            <div className="relative">
+                <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                    <input
+                        type="text"
+                        required
+                        disabled={isEditMode && !isUnlocked}
+                        placeholder="Search responsibility or role..."
+                        value={isDropdownOpen && isUnlocked ? respSearchQuery : selectedRespLabel}
+                        onFocus={() => {
+                            if (!isEditMode || isUnlocked) {
+                                setIsDropdownOpen(true);
+                                setRespSearchQuery("");
+                            }
+                        }}
+                        onChange={(e) => setRespSearchQuery(e.target.value)}
+                        className={`w-full pl-8 pr-8 py-2 border rounded-xl text-xs transition-colors ${
+                            isEditMode && !isUnlocked
+                                ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                                : "bg-slate-50 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
+                        }`}
+                    />
+                    {(!isEditMode || isUnlocked) && responsibilityId && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setResponsibilityId("");
+                                setRespSearchQuery("");
+                                setIsDropdownOpen(true);
+                            }}
+                            className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                        </button>
+                    )}
+                </div>
+
+                {(!isEditMode || isUnlocked) && isDropdownOpen && (
+                    <div className="absolute z-30 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto divide-y divide-slate-100">
+                        {data.roles.map((role) => {
+                            const matchingResps = data.responsibilities
+                                .filter((resp) => resp.roleId === role.id)
+                                .filter(
+                                    (resp) =>
+                                        !respSearchQuery ||
+                                        resp.title.toLowerCase().includes(respSearchQuery.toLowerCase()) ||
+                                        role.title.toLowerCase().includes(respSearchQuery.toLowerCase()),
+                                );
+
+                            if (matchingResps.length === 0) return null;
+
+                            return (
+                                <div key={role.id}>
+                                    <div className="p-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        {role.title}
+                                    </div>
+                                    {matchingResps.map((resp) => {
+                                        const isSelected = resp.id === responsibilityId;
+                                        return (
+                                            <button
+                                                key={resp.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setResponsibilityId(resp.id);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${
+                                                    isSelected
+                                                        ? "bg-indigo-50/70 text-indigo-600 font-medium"
+                                                        : "text-slate-700"
+                                                }`}
+                                            >
+                                                <span>{resp.title}</span>
+                                                {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// 2. Description Field Component
+const DescriptionField: React.FC<
+    FieldComponentProps & {
+        description: string;
+        setDescription: (val: string) => void;
+        isUnlocked: boolean;
+        onToggleLock: () => void;
+        isAnyLocked: boolean;
+    }
+> = ({ requestId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const [savingField, setSavingField] = useState(false);
+    const isEditMode = Boolean(requestId);
+
+    const handleSave = () => {
+        setSavingField(true);
+        setTimeout(() => {
+            // TODO: Update backend/store with new description here
+            setSavingField(false);
+            onToggleLock();
+        }, 5000);
+    };
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-1">
+                <label className="font-semibold text-slate-700">
+                    Description (First line acts as Title, Markdown supported)
+                </label>
+                {isEditMode && (
+                    <div className="flex items-center gap-2">
+                        {isUnlocked ? (
+                            <button
+                                type="button"
+                                onClick={handleSave}
+                                disabled={savingField}
+                                className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] flex items-center gap-1 transition-all disabled:opacity-50"
+                            >
+                                {savingField ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!isAnyLocked) onToggleLock();
+                                }}
+                                disabled={isAnyLocked}
+                                className="text-slate-400 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-slate-400 flex items-center gap-1 transition-colors text-[11px]"
+                            >
+                                <Lock className="w-3 h-3" /> Locked
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+            <textarea
+                rows={5}
+                required
+                disabled={isEditMode && !isUnlocked}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={"API Spec Review\nDraft the OpenAPI 3.0 specification document..."}
+                className={`w-full px-3 py-2 border rounded-xl font-mono text-[11px] transition-colors ${
+                    isEditMode && !isUnlocked
+                        ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                        : "bg-slate-50 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800"
+                }`}
+            />
+        </div>
+    );
+};
+
+// 3. Due Date Field Component
+const DueDateField: React.FC<
+    FieldComponentProps & {
+        dueDate: string;
+        setDueDate: (val: string) => void;
+        isUnlocked: boolean;
+        onToggleLock: () => void;
+        isAnyLocked: boolean;
+    }
+> = ({ requestId, dueDate, setDueDate, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const [savingField, setSavingField] = useState(false);
+    const isEditMode = Boolean(requestId);
+
+    const handleSave = () => {
+        setSavingField(true);
+        setTimeout(() => {
+            // TODO: Update backend/store with new dueDate here
+            setSavingField(false);
+            onToggleLock();
+        }, 5000);
+    };
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-1">
+                <label className="font-semibold text-slate-700">Due Date</label>
+                {isEditMode && (
+                    <div className="flex items-center gap-2">
+                        {isUnlocked ? (
+                            <button
+                                type="button"
+                                onClick={handleSave}
+                                disabled={savingField}
+                                className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] flex items-center gap-1 transition-all disabled:opacity-50"
+                            >
+                                {savingField ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!isAnyLocked) onToggleLock();
+                                }}
+                                disabled={isAnyLocked}
+                                className="text-slate-400 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-slate-400 flex items-center gap-1 transition-colors text-[11px]"
+                            >
+                                <Lock className="w-3 h-3" /> Locked
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+            <input
+                type="date"
+                required
+                disabled={isEditMode && !isUnlocked}
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className={`w-full px-3 py-2 border rounded-xl text-xs transition-colors ${
+                    isEditMode && !isUnlocked
+                        ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                        : "bg-slate-50 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-800"
+                }`}
+            />
+        </div>
+    );
+};
+
+// 4. Status Field Component
+const StatusField: React.FC<
+    FieldComponentProps & {
+        status: RequestStatus;
+        setStatus: (val: RequestStatus) => void;
+        isUnlocked: boolean;
+        onToggleLock: () => void;
+        isAnyLocked: boolean;
+    }
+> = ({ requestId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const [savingField, setSavingField] = useState(false);
+    const isEditMode = Boolean(requestId);
+
+    const handleSave = () => {
+        setSavingField(true);
+        setTimeout(() => {
+            // TODO: Update backend/store with new status here
+            setSavingField(false);
+            onToggleLock();
+        }, 5000);
+    };
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-1">
+                <label className="font-semibold text-slate-700">Status</label>
+                {isEditMode && (
+                    <div className="flex items-center gap-2">
+                        {isUnlocked ? (
+                            <button
+                                type="button"
+                                onClick={handleSave}
+                                disabled={savingField}
+                                className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded text-[11px] flex items-center gap-1 transition-all disabled:opacity-50"
+                            >
+                                {savingField ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Saving...
+                                    </>
+                                ) : (
+                                    "Save"
+                                )}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!isAnyLocked) onToggleLock();
+                                }}
+                                disabled={isAnyLocked}
+                                className="text-slate-400 hover:text-indigo-600 disabled:opacity-30 disabled:hover:text-slate-400 flex items-center gap-1 transition-colors text-[11px]"
+                            >
+                                <Lock className="w-3 h-3" /> Locked
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+            <select
+                value={status}
+                disabled={isEditMode && !isUnlocked}
+                onChange={(e) => setStatus(e.target.value as RequestStatus)}
+                className={`w-full px-3 py-2 border rounded-xl text-xs font-semibold transition-colors ${
+                    isEditMode && !isUnlocked
+                        ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
+                        : "bg-slate-50 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-800"
+                }`}
+            >
+                <option value="OPEN">OPEN</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="CLOSED">CLOSED</option>
+            </select>
+        </div>
+    );
+};
 
 export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) => {
     const { data, addRequest } = useOmniStore();
@@ -17,9 +408,10 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
     const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
     const [status, setStatus] = useState<RequestStatus>("OPEN");
 
-    // Search & Combobox states for parent responsibility selection
-    const [respSearchQuery, setRespSearchQuery] = useState("");
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // Track which field is currently unlocked (null means all are locked)
+    const [unlockedField, setUnlockedField] = useState<"responsibility" | "description" | "dueDate" | "status" | null>(
+        null,
+    );
 
     const requestId = dialogData.request?.id;
 
@@ -33,6 +425,8 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                 setDueDate(existingReq.dueDate);
                 setStatus(existingReq.status);
             }
+            // Edit state: all fields locked by default
+            setUnlockedField(null);
         } else {
             const initialRespId = dialogData.request?.responsibilityId || data.responsibilities[0]?.id || "";
             setResponsibilityId(initialRespId);
@@ -40,17 +434,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
             setDueDate(new Date().toISOString().split("T")[0]);
             setStatus("OPEN");
         }
-        setRespSearchQuery("");
-        setIsDropdownOpen(false);
     }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
-
-    // Derived selected responsibility label for input display
-    const selectedRespLabel = useMemo(() => {
-        const selectedResp = data.responsibilities.find((r) => r.id === responsibilityId);
-        if (!selectedResp) return "";
-        const parentRole = data.roles.find((ro) => ro.id === selectedResp.roleId);
-        return parentRole ? `${parentRole.title} › ${selectedResp.title}` : selectedResp.title;
-    }, [responsibilityId, data.responsibilities, data.roles]);
 
     if (!isOpen) return null;
 
@@ -58,14 +442,14 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
         e.preventDefault();
         if (!description.trim() || !responsibilityId) return;
 
-        if (requestId) {
-            alert("Need to update to handle editing a Request");
-        } else {
+        if (!requestId) {
             addRequest({ responsibilityId, description, dueDate, status });
+            onClose();
         }
-
-        onClose();
     };
+
+    const isEditMode = Boolean(requestId);
+    const isAnyLocked = unlockedField !== null;
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -73,12 +457,12 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                 {/* Modal Header */}
                 <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                        {requestId ? (
+                        {isEditMode ? (
                             <Edit3 className="w-4 h-4 text-indigo-600" />
                         ) : (
                             <CheckSquare className="w-4 h-4 text-indigo-600" />
                         )}
-                        {requestId ? "Edit Request" : "Create New Request"}
+                        {isEditMode ? "Edit Request" : "Create New Request"}
                     </h3>
                     <button
                         onClick={onClose}
@@ -90,7 +474,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
 
                 {/* Modal Form Body */}
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
-                    {requestId && (
+                    {isEditMode && (
                         <div className="bg-slate-100 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between font-mono text-slate-600">
                             <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">
                                 Request ID
@@ -101,129 +485,43 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                         </div>
                     )}
 
-                    {/* Searchable Responsibility Picker */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-1">Parent Responsibility</label>
-                        <div className="relative">
-                            <div className="relative">
-                                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="Search responsibility or role..."
-                                    value={isDropdownOpen ? respSearchQuery : selectedRespLabel}
-                                    onFocus={() => {
-                                        setIsDropdownOpen(true);
-                                        setRespSearchQuery("");
-                                    }}
-                                    onChange={(e) => setRespSearchQuery(e.target.value)}
-                                    className="w-full pl-8 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs"
-                                />
-                                {responsibilityId && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setResponsibilityId("");
-                                            setRespSearchQuery("");
-                                            setIsDropdownOpen(true);
-                                        }}
-                                        className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
-                                    >
-                                        <X className="w-3.5 h-3.5" />
-                                    </button>
-                                )}
-                            </div>
+                    <ResponsibilityField
+                        requestId={requestId}
+                        responsibilityId={responsibilityId}
+                        setResponsibilityId={setResponsibilityId}
+                        isUnlocked={unlockedField === "responsibility"}
+                        onToggleLock={() =>
+                            setUnlockedField(unlockedField === "responsibility" ? null : "responsibility")
+                        }
+                        isAnyLocked={isAnyLocked}
+                    />
 
-                            {/* Responsibility Search Results Dropdown */}
-                            {isDropdownOpen && (
-                                <div className="absolute z-30 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto divide-y divide-slate-100">
-                                    {data.roles.map((role) => {
-                                        const matchingResps = data.responsibilities
-                                            .filter((resp) => resp.roleId === role.id)
-                                            .filter(
-                                                (resp) =>
-                                                    !respSearchQuery ||
-                                                    resp.title.toLowerCase().includes(respSearchQuery.toLowerCase()) ||
-                                                    role.title.toLowerCase().includes(respSearchQuery.toLowerCase()),
-                                            );
+                    <DescriptionField
+                        requestId={requestId}
+                        description={description}
+                        setDescription={setDescription}
+                        isUnlocked={unlockedField === "description"}
+                        onToggleLock={() => setUnlockedField(unlockedField === "description" ? null : "description")}
+                        isAnyLocked={isAnyLocked}
+                    />
 
-                                        if (matchingResps.length === 0) return null;
-
-                                        return (
-                                            <div key={role.id}>
-                                                <div className="p-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                                    {role.title}
-                                                </div>
-                                                {matchingResps.map((resp) => {
-                                                    const isSelected = resp.id === responsibilityId;
-                                                    return (
-                                                        <button
-                                                            key={resp.id}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setResponsibilityId(resp.id);
-                                                                setIsDropdownOpen(false);
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${
-                                                                isSelected
-                                                                    ? "bg-indigo-50/70 text-indigo-600 font-medium"
-                                                                    : "text-slate-700"
-                                                            }`}
-                                                        >
-                                                            <span>{resp.title}</span>
-                                                            {isSelected && (
-                                                                <Check className="w-3.5 h-3.5 text-indigo-600" />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-1">
-                            Description (First line acts as Title, Markdown supported)
-                        </label>
-                        <textarea
-                            rows={5}
-                            required
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder={"API Spec Review\nDraft the OpenAPI 3.0 specification document..."}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                        />
-                    </div>
-
-                    {/* Due Date & Status */}
                     <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Due Date</label>
-                            <input
-                                type="date"
-                                required
-                                value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs"
-                            />
-                        </div>
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-1">Status</label>
-                            <select
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value as RequestStatus)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs font-semibold"
-                            >
-                                <option value="OPEN">OPEN</option>
-                                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                                <option value="CLOSED">CLOSED</option>
-                            </select>
-                        </div>
+                        <DueDateField
+                            requestId={requestId}
+                            dueDate={dueDate}
+                            setDueDate={setDueDate}
+                            isUnlocked={unlockedField === "dueDate"}
+                            onToggleLock={() => setUnlockedField(unlockedField === "dueDate" ? null : "dueDate")}
+                            isAnyLocked={isAnyLocked}
+                        />
+                        <StatusField
+                            requestId={requestId}
+                            status={status}
+                            setStatus={setStatus}
+                            isUnlocked={unlockedField === "status"}
+                            onToggleLock={() => setUnlockedField(unlockedField === "status" ? null : "status")}
+                            isAnyLocked={isAnyLocked}
+                        />
                     </div>
 
                     {/* Modal Actions */}
@@ -235,12 +533,14 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                         >
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-sm"
-                        >
-                            {requestId ? "Save Changes" : "Create Request"}
-                        </button>
+                        {!isEditMode && (
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-sm"
+                            >
+                                Create Request
+                            </button>
+                        )}
                     </div>
                 </form>
             </div>
