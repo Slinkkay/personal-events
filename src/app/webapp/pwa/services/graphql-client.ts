@@ -270,5 +270,17 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
                 status: "CLOSED",
             });
         },
+        async updateRequestDescription(id: string, description: string): Promise<void> {
+            const q = `
+              mutation UpdateReqDescription($requestId: String, $description: String) {
+                requestUpdateDescription( requestId: $requestId, description: $description)
+              }
+            `;
+
+            await executeQuery(q, {
+                requestId: id,
+                description,
+            });
+        },
     };
 }

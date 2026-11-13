@@ -182,16 +182,16 @@ const DescriptionField: React.FC<
         isAnyLocked: boolean;
     }
 > = ({ requestId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const { updateRequestDescription } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
 
     const handleSave = () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new description here
-            setSavingField(false);
-            onToggleLock();
-        }, 5000);
+        if (requestId === undefined) {
+            return;
+        }
+        updateRequestDescription(requestId, description);
     };
 
     return (
