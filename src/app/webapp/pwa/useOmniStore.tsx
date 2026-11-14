@@ -142,7 +142,7 @@ export type OmniStorePersistence = {
 
 // --- CONTEXT CREATION ---
 const persistence: OmniStorePersistence = makeGraphQLPersistence({
-    endpoint: "http://localhost:3000/graphql",
+    endpoint: "/graphql",
     authToken: "your-token-here",
     onError: (err) => {
         console.error("Persistence Sync Error:", err.message);
