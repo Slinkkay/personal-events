@@ -113,9 +113,10 @@ type OmniStoreState = {
     closeResponsibility: (id: string) => void;
 
     // Request Actions
-    updateRequestStatus: (id: string, newStatus: RequestStatus) => void;
     addRequest: (req: Omit<RequestItem, "id"> & { id?: string }) => void;
+    updateRequestStatus: (id: string, newStatus: RequestStatus) => void;
     updateRequestDescription: (id: string, description: string) => void;
+    updateRequestDueDate: (id: string, dueDate: string) => void;
 };
 
 export type OmniStorePersistence = {
@@ -129,9 +130,10 @@ export type OmniStorePersistence = {
     deleteResponsibility: (id: string) => Promise<void>;
 
     // Request Actions
+    addRequest: (req: Omit<RequestItem, "id"> & { id?: string }) => Promise<void>;
     updateRequestStatus: (id: string, newStatus: RequestStatus) => Promise<void>;
     updateRequestDescription: (id: string, description: string) => Promise<void>;
-    addRequest: (req: Omit<RequestItem, "id"> & { id?: string }) => Promise<void>;
+    updateRequestDueDate: (id: string, dueDate: string) => Promise<void>;
     deleteRequest: (id: string) => Promise<void>;
 
     // Current State
@@ -230,6 +232,15 @@ export const useOmniStore = create<OmniStoreState>()(
                 }
             };
 
+            const updateRequestDueDate = async (id: string, dueDate: string) => {
+                try {
+                    await persistence.updateRequestDueDate(id, dueDate);
+                    await fetchData();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+
             return {
                 data: {
                     requests: [],
@@ -255,6 +266,7 @@ export const useOmniStore = create<OmniStoreState>()(
                 addResponsibility,
                 addRequest,
                 updateRequestDescription,
+                updateRequestDueDate,
             };
         },
         {

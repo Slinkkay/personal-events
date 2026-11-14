@@ -259,16 +259,16 @@ const DueDateField: React.FC<
         isAnyLocked: boolean;
     }
 > = ({ requestId, dueDate, setDueDate, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const { updateRequestDueDate } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
 
     const handleSave = () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new dueDate here
-            setSavingField(false);
-            onToggleLock();
-        }, 5000);
+        if (requestId === undefined) {
+            return;
+        }
+        updateRequestDueDate(requestId, dueDate);
     };
 
     return (

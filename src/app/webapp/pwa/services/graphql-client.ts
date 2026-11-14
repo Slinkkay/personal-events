@@ -282,5 +282,17 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
                 description,
             });
         },
+        async updateRequestDueDate(id: string, dueDate: string): Promise<void> {
+            const q = `
+              mutation UpdateReqDueDate($requestId: String, $dueDate: String) {
+                requestUpdateDueDate(requestId: $requestId, dueDate: $dueDate)
+              }
+            `;
+
+            await executeQuery(q, {
+                requestId: id,
+                dueDate,
+            });
+        },
     };
 }
