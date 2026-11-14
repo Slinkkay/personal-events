@@ -333,16 +333,16 @@ const StatusField: React.FC<
         isAnyLocked: boolean;
     }
 > = ({ requestId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
+    const { updateRequestStatus } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
 
     const handleSave = () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new status here
-            setSavingField(false);
-            onToggleLock();
-        }, 5000);
+        if (requestId === undefined) {
+            return;
+        }
+        updateRequestStatus(requestId, status);
     };
 
     return (
