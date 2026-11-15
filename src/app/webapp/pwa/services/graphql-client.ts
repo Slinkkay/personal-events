@@ -162,6 +162,18 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
+        async updateRoleDescription(id, description): Promise<void> {
+            const q = `
+                mutation UpdateRoleDescription($id: String, $description: String) {
+                    roleUpdateDescription(roleId: $id, description: $description)
+                }
+            `;
+            await executeQuery(q, {
+                id,
+                description,
+            });
+        },
+
         async closeRole(id: string): Promise<void> {
             const q = `
               mutation UpdateRoleStatus($roleId: String, $status: String) {

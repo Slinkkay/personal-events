@@ -106,6 +106,7 @@ type OmniStoreState = {
 
     // Role Actions
     updateRoleTitle: (id: string, title: string) => Promise<void>;
+    updateRoleDescription: (id: string, description: string) => Promise<void>;
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => void;
     closeRole: (id: string) => void;
 
@@ -123,6 +124,7 @@ type OmniStoreState = {
 export type OmniStorePersistence = {
     // Role Actions
     updateRoleTitle: (id: string, title: string) => Promise<void>;
+    updateRoleDescription: (id: string, description: string) => Promise<void>;
     addRole: (role: Omit<Role, "id" | "createdAt"> & { id?: string }) => Promise<void>;
     closeRole: (id: string) => Promise<void>;
 
@@ -177,6 +179,15 @@ export const useOmniStore = create<OmniStoreState>()(
             const updateRoleTitle = async (id: string, title: string) => {
                 try {
                     await persistence.updateRoleTitle(id, title);
+                    await fetchData();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+
+            const updateRoleDescription = async (id: string, description: string) => {
+                try {
+                    await persistence.updateRoleDescription(id, description);
                     await fetchData();
                 } catch (err) {
                     console.error(err);
@@ -271,6 +282,7 @@ export const useOmniStore = create<OmniStoreState>()(
                 },
                 fetchCurrent: fetchData,
                 updateRoleTitle,
+                updateRoleDescription,
                 addRole,
                 closeRole,
                 closeResponsibility,
