@@ -181,14 +181,16 @@ const StatusField: React.FC<
 > = ({ roleId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(roleId);
+    const { updateRoleStatus } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (roleId === undefined) {
+            return;
+        }
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new status here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+        await updateRoleStatus(roleId, status);
+        setSavingField(false);
+        onToggleLock();
     };
 
     return (
