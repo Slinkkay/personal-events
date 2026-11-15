@@ -246,9 +246,11 @@ const StatusField: React.FC<
     );
 };
 
-export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, onClose }) => {
+export const RoleModal: React.FC = ({}) => {
     const { data, addRole } = useOmniStore();
-    const { data: dialogData } = useDialogStore();
+    const { data: dialogData, closeRole } = useDialogStore();
+
+    const isOpen = dialogData.role !== null;
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -286,7 +288,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, onClose }) => {
 
         if (!roleId) {
             addRole({ title, description, status: "OPEN" });
-            onClose();
+            closeRole();
         }
     };
 
@@ -294,7 +296,15 @@ export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, onClose }) => {
     const isAnyLocked = unlockedField !== null;
 
     return (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={(e) => {
+                // Close only if clicking the backdrop directly, not the modal content box
+                if (e.target === e.currentTarget) {
+                    closeRole();
+                }
+            }}
+        >
             <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-100">
                 {/* Modal Header */}
                 <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -307,7 +317,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, onClose }) => {
                         {isEditMode ? "Edit Role" : "Create New Role"}
                     </h3>
                     <button
-                        onClick={onClose}
+                        onClick={closeRole}
                         className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-200/50 transition-all"
                     >
                         <X className="w-4 h-4" />
@@ -360,7 +370,7 @@ export const RoleModal: React.FC<RoleModalProps> = ({ isOpen, onClose }) => {
                     <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={closeRole}
                             className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all"
                         >
                             Cancel

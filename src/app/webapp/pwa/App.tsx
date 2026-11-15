@@ -24,7 +24,7 @@ export default function App() {
             </main>
 
             {/* Global Modals */}
-            <RoleModal isOpen={data.role !== null} onClose={() => closeRole()} />
+            <RoleModal />
             <ResponsibilityModal
                 isOpen={data.responsibility !== null}
                 defaultRoleId={data.responsibility?.roleId}
