@@ -227,19 +227,6 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
-        async deleteResponsibility(id: string): Promise<void> {
-            const q = `
-              mutation UpdateRespStatus($responsibilityId: String, $status: String) {
-                responsibilityUpdateStatus(responsibilityId: $responsibilityId, status: $status)
-              }
-            `;
-
-            await executeQuery(q, {
-                responsibilityId: id,
-                status: "CLOSED",
-            });
-        },
-
         async updateResponsibilityStatus(id: string, status: string): Promise<void> {
             const q = `
               mutation UpdateRespStatus($responsibilityId: String, $status: String) {
@@ -250,6 +237,32 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             await executeQuery(q, {
                 responsibilityId: id,
                 status,
+            });
+        },
+
+        async updateResponsibilityTitle(id: string, title): Promise<void> {
+            const q = `
+              mutation UpdateRespTitle($responsibilityId: String, $title: String) {
+                responsibilityUpdateName(responsibilityId: $responsibilityId, name: $title)
+              }
+            `;
+
+            await executeQuery(q, {
+                responsibilityId: id,
+                title,
+            });
+        },
+
+        async deleteResponsibility(id: string): Promise<void> {
+            const q = `
+              mutation UpdateRespStatus($responsibilityId: String, $status: String) {
+                responsibilityUpdateStatus(responsibilityId: $responsibilityId, status: $status)
+              }
+            `;
+
+            await executeQuery(q, {
+                responsibilityId: id,
+                status: "CLOSED",
             });
         },
 

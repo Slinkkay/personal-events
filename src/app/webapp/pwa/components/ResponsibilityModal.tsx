@@ -4,7 +4,7 @@ import { X, GitCommit, Edit3, Lock, Loader2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
 interface FieldComponentProps {
-    responsibilityId: string | undefined | null;
+    responsibilityId: string | undefined;
 }
 
 // 1. Parent Role Field Component
@@ -99,14 +99,19 @@ const TitleField: React.FC<
 > = ({ responsibilityId, title, setTitle, isUnlocked, onToggleLock, isAnyLocked }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
+    const { updateResponsibilityTitle } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new title here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+
+        if (!responsibilityId) {
+            return;
+        }
+
+        await updateResponsibilityTitle(responsibilityId, title);
+
+        setSavingField(false);
+        onToggleLock();
     };
 
     return (

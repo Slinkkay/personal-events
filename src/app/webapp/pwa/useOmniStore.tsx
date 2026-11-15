@@ -112,6 +112,7 @@ type OmniStoreState = {
     closeRole: (id: string) => void;
 
     // Responsibility Actions (New Types)
+    updateResponsibilityTitle: (id: string, title: string) => Promise<void>;
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => void;
     closeResponsibility: (id: string) => void;
 
@@ -133,6 +134,7 @@ export type OmniStorePersistence = {
     // Responsibility Actions
     addResponsibility: (resp: Omit<Responsibility, "id"> & { id?: string }) => Promise<void>;
     updateResponsibilityStatus: (id: string, status: string) => Promise<void>;
+    updateResponsibilityTitle: (id: string, title: string) => Promise<void>;
     deleteResponsibility: (id: string) => Promise<void>;
 
     // Request Actions
@@ -229,6 +231,15 @@ export const useOmniStore = create<OmniStoreState>()(
                 }
             };
 
+            const updateResponsibilityTitle = async (id: string, title: string) => {
+                try {
+                    await persistence.updateResponsibilityTitle(id, title);
+                    await fetchData();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+
             const addResponsibility = async (respInput: Omit<Responsibility, "id"> & { id?: string }) => {
                 try {
                     await persistence.addResponsibility(respInput);
@@ -299,6 +310,7 @@ export const useOmniStore = create<OmniStoreState>()(
                 closeRole,
                 closeResponsibility,
                 updateRequestStatus,
+                updateResponsibilityTitle,
                 addResponsibility,
                 addRequest,
                 updateRequestDescription,
