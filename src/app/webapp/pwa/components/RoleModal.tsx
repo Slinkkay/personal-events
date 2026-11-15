@@ -24,14 +24,16 @@ const TitleField: React.FC<
 > = ({ roleId, title, setTitle, isUnlocked, onToggleLock, isAnyLocked }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(roleId);
+    const { updateRoleTitle } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new title here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+        if (roleId === undefined) {
+            return;
+        }
+        setSavingField(false);
+        await updateRoleTitle(roleId, title);
+        onToggleLock();
     };
 
     return (

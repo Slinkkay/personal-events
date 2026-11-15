@@ -150,6 +150,18 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
+        async updateRoleTitle(id, title): Promise<void> {
+            const q = `
+                mutation UpdateRoleTitle($id: String, $name: String) {
+                    roleUpdateName(roleId: $id, name: $name)
+                }
+            `;
+            await executeQuery(q, {
+                id,
+                name: title,
+            });
+        },
+
         async closeRole(id: string): Promise<void> {
             const q = `
               mutation UpdateRoleStatus($roleId: String, $status: String) {
