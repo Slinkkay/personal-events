@@ -179,14 +179,17 @@ const DescriptionField: React.FC<
 > = ({ responsibilityId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
+    const { updateResponsibilityDescription } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (responsibilityId === undefined) {
+            return;
+        }
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new description here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+        await updateResponsibilityDescription(responsibilityId, description);
+
+        setSavingField(false);
+        onToggleLock();
     };
 
     return (

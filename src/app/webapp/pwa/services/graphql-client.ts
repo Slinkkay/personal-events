@@ -253,6 +253,19 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
+        async updateResponsibilityDescription(id: string, description): Promise<void> {
+            const q = `
+              mutation UpdateRespTitle($responsibilityId: String, $description: String) {
+                responsibilityUpdateDescription(responsibilityId: $responsibilityId, description: $description)
+              }
+            `;
+
+            await executeQuery(q, {
+                responsibilityId: id,
+                description,
+            });
+        },
+
         async deleteResponsibility(id: string): Promise<void> {
             const q = `
               mutation UpdateRespStatus($responsibilityId: String, $status: String) {
