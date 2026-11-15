@@ -256,14 +256,18 @@ const StatusField: React.FC<
 > = ({ responsibilityId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
+    const { updateResponsibilityStatus } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new status here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+
+        if (responsibilityId === undefined) {
+            return;
+        }
+
+        await updateResponsibilityStatus(responsibilityId, status);
+        setSavingField(false);
+        onToggleLock();
     };
 
     return (
