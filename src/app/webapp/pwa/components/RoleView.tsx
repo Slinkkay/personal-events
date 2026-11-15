@@ -1,5 +1,5 @@
 import React from "react";
-import { useOmniStore, Role, Responsibility, RequestItem } from "../useOmniStore";
+import { Role, Responsibility, RequestItem } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { ResponsibilityList } from "./ResponsibilityList";
 import { ChevronRight, ChevronDown, FileText, Plus, Edit3 } from "lucide-react";
@@ -25,12 +25,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
     onToggleRespExpand,
 }) => {
     // Directly consume actions from the store instead of receiving them via props
-    const { closeRole } = useOmniStore();
     const { showResponsibility, showRole } = useDialogStore();
-
-    const handleRoleDelete = () => {
-        closeRole(role.id);
-    };
 
     const visibleResponsibilities = responsibilities.filter((res) => res.status == "OPEN");
 

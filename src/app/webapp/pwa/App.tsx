@@ -12,7 +12,7 @@ export default function App() {
     const [activeTab, setActiveTab] = useState<"hierarchy" | "requests">("hierarchy");
 
     // Modal Visibility States
-    const { data, closeRole, closeResponsibility, closeRequest } = useDialogStore();
+    const { data, closeResponsibility, closeRequest } = useDialogStore();
 
     return (
         <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">

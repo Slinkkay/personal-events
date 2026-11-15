@@ -3,11 +3,6 @@ import { useOmniStore, RoleStatus } from "../useOmniStore";
 import { X, FolderPlus, Edit3, Lock, Loader2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
-interface RoleModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
 interface FieldComponentProps {
     roleId: string | undefined;
 }
@@ -282,7 +277,7 @@ export const RoleModal: React.FC = ({}) => {
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.SubmitEvent) => {
         e.preventDefault();
         if (!title.trim()) return;
 
