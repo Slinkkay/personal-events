@@ -2,7 +2,7 @@ import React from "react";
 import { useOmniStore, Role, Responsibility, RequestItem } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { ResponsibilityList } from "./ResponsibilityList";
-import { ChevronRight, ChevronDown, Archive, RotateCcw, FileText, Plus } from "lucide-react";
+import { ChevronRight, ChevronDown, FileText, Plus, Edit3 } from "lucide-react";
 import { useDialogStore } from "../dialog";
 
 interface RoleViewProps {
@@ -26,7 +26,7 @@ export const RoleView: React.FC<RoleViewProps> = ({
 }) => {
     // Directly consume actions from the store instead of receiving them via props
     const { closeRole } = useOmniStore();
-    const { showResponsibility } = useDialogStore();
+    const { showResponsibility, showRole } = useDialogStore();
 
     const handleRoleDelete = () => {
         closeRole(role.id);
@@ -71,15 +71,16 @@ export const RoleView: React.FC<RoleViewProps> = ({
                         <Plus className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Add Resp</span>
                     </button>
                     <button
-                        title={role.status === "OPEN" ? "Close Role" : "Reopen Role"}
+                        onClick={() =>
+                            showRole({
+                                type: "edit",
+                                id: role.id,
+                            })
+                        }
                         className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white p-2 rounded-xl transition-all border border-slate-700"
-                        onClick={handleRoleDelete}
+                        title="Edit Request"
                     >
-                        {role.status === "OPEN" ? (
-                            <Archive className="w-3.5 h-3.5" />
-                        ) : (
-                            <RotateCcw className="w-3.5 h-3.5" />
-                        )}
+                        <Edit3 className="w-3.5 h-3.5" />
                     </button>
                 </div>
             </div>
