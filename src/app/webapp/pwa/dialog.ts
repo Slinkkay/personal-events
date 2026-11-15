@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 type RequestCommand =
     | {
@@ -65,96 +66,104 @@ export type DialogStore = {
     closeResponsibility: () => void;
 };
 
-export const useDialogStore = create<DialogStore>((setState) => {
-    const data = createNullState();
+export const useDialogStore = create<DialogStore>()(
+    devtools(
+        (setState) => {
+            const data = createNullState();
 
-    const showRequest = (command: RequestCommand) => {
-        switch (command.type) {
-            case "create":
-                setState({
-                    data: {
-                        ...createNullState(),
-                        request: {
-                            responsibilityId: command.responsibilityId,
-                        },
-                    },
-                });
-                break;
-            case "edit":
-                setState({
-                    data: {
-                        ...createNullState(),
-                        request: {
-                            id: command.id,
-                            responsibilityId: command.responsibilityId,
-                        },
-                    },
-                });
-        }
-    };
+            const showRequest = (command: RequestCommand) => {
+                switch (command.type) {
+                    case "create":
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                request: {
+                                    responsibilityId: command.responsibilityId,
+                                },
+                            },
+                        });
+                        break;
+                    case "edit":
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                request: {
+                                    id: command.id,
+                                    responsibilityId: command.responsibilityId,
+                                },
+                            },
+                        });
+                }
+            };
 
-    const showRole = (command: RoleCommand) => {
-        switch (command.type) {
-            case "edit":
-                setState({
-                    data: {
-                        ...createNullState(),
-                        role: {
-                            id: command.id,
-                        },
-                    },
-                });
-                break;
-            case "create": {
-                setState({
-                    data: {
-                        ...createNullState(),
-                        role: {},
-                    },
-                });
-            }
-        }
-    };
+            const showRole = (command: RoleCommand) => {
+                switch (command.type) {
+                    case "edit":
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                role: {
+                                    id: command.id,
+                                },
+                            },
+                        });
+                        break;
+                    case "create": {
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                role: {},
+                            },
+                        });
+                    }
+                }
+            };
 
-    const showResponsibility = (command: ResponsibilityCommand) => {
-        switch (command.type) {
-            case "edit":
-                setState({
-                    data: {
-                        ...createNullState(),
-                        responsibility: {
-                            roleId: command.roleId,
-                            id: command.id,
-                        },
-                    },
-                });
-                break;
-            case "create":
-                setState({
-                    data: {
-                        ...createNullState(),
-                        responsibility: {
-                            roleId: command.roleId,
-                        },
-                    },
-                });
-                break;
-        }
-    };
+            const showResponsibility = (command: ResponsibilityCommand) => {
+                switch (command.type) {
+                    case "edit":
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                responsibility: {
+                                    roleId: command.roleId,
+                                    id: command.id,
+                                },
+                            },
+                        });
+                        break;
+                    case "create":
+                        setState({
+                            data: {
+                                ...createNullState(),
+                                responsibility: {
+                                    roleId: command.roleId,
+                                },
+                            },
+                        });
+                        break;
+                }
+            };
 
-    const generalClose = () => {
-        setState({
-            data: createNullState(),
-        });
-    };
+            const generalClose = () => {
+                setState({
+                    data: createNullState(),
+                });
+            };
 
-    return {
-        data,
-        showRequest,
-        showRole,
-        showResponsibility,
-        closeRequest: generalClose,
-        closeResponsibility: generalClose,
-        closeRole: generalClose,
-    };
-});
+            return {
+                data,
+                showRequest,
+                showRole,
+                showResponsibility,
+                closeRequest: generalClose,
+                closeResponsibility: generalClose,
+                closeRole: generalClose,
+            };
+        },
+        {
+            name: "Dialog-Store",
+            enabled: true,
+        },
+    ),
+);

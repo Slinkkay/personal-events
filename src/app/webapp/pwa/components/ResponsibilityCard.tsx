@@ -21,7 +21,7 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
     onEdit,
 }) => {
     const { closeResponsibility } = useOmniStore();
-    const { showRequest } = useDialogStore();
+    const { showRequest, showResponsibility } = useDialogStore();
 
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ml-0 sm:ml-4 transition-all">
@@ -64,6 +64,19 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                         className="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200"
                     >
                         <Archive className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={() =>
+                            showResponsibility({
+                                type: "edit",
+                                id: responsibility.id,
+                                roleId: responsibility.roleId,
+                            })
+                        }
+                        className="bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 p-1.5 rounded-lg border border-slate-200"
+                        title="Edit Request"
+                    >
+                        <Edit3 className="w-3.5 h-3.5" />
                     </button>
                     <button
                         onClick={(e) => {

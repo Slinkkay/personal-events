@@ -14,6 +14,8 @@ export default function App() {
     // Modal Visibility States
     const { data, closeResponsibility, closeRequest } = useDialogStore();
 
+    console.log("ResponsibilityModal", data);
+
     return (
         <div className="h-full min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
             <AppInitializer></AppInitializer>
@@ -25,11 +27,7 @@ export default function App() {
 
             {/* Global Modals */}
             <RoleModal />
-            <ResponsibilityModal
-                isOpen={data.responsibility !== null}
-                defaultRoleId={data.responsibility?.roleId}
-                onClose={() => closeResponsibility()}
-            />
+            <ResponsibilityModal />
             <RequestModal isOpen={data.request !== null} onClose={() => closeRequest()} />
         </div>
     );
