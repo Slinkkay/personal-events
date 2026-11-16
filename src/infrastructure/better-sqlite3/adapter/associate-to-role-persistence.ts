@@ -9,6 +9,11 @@ const createAssociateToRoleInsert = (table: string) => `
     VALUES (?, ?, ?);
 `;
 
+const createRemoveExistingAssociation = (table: string) => `
+    DELETE FROM ${table}
+    WHERE destination = ?;
+`;
+
 export function makeAssociateToRolePersistence(
     db: Database,
     sqliteConfig: SqliteConfig,
@@ -26,6 +31,22 @@ export function makeAssociateToRolePersistence(
                 appLogger.error({
                     type: "sqlite-assocaite-to-role-insert",
                     err,
+                });
+                return failure();
+            }
+            return success();
+        },
+
+        removeExistingAssociation: async ({ responsibilityId }) => {
+            try {
+                const removeAssociationStatement = db.prepare<[string]>(
+                    createRemoveExistingAssociation(sqliteConfig.tables.roleToResponsibility),
+                );
+
+                removeAssociationStatement.run(responsibilityId);
+            } catch (err: any) {
+                appLogger.error({
+                    type: "sqlite-remove-association",
                 });
                 return failure();
             }

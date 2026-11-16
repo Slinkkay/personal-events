@@ -266,6 +266,19 @@ export function makeGraphQLPersistence(config: GraphQLPersistenceConfig): OmniSt
             });
         },
 
+        async updateResponsibilityRole(id: string, roleId): Promise<void> {
+            const q = `
+              mutation UpdateRespRole($responsibilityId: String, $roleId: String) {
+                responsibilityAssociateToRole(responsibilityId: $responsibilityId, roleId: $roleId)
+              }
+            `;
+
+            await executeQuery(q, {
+                responsibilityId: id,
+                roleId,
+            });
+        },
+
         async deleteResponsibility(id: string): Promise<void> {
             const q = `
               mutation UpdateRespStatus($responsibilityId: String, $status: String) {

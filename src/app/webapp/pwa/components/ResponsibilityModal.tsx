@@ -20,14 +20,19 @@ const RoleField: React.FC<
     const { data } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
+    const { updateResponsibilityRole } = useOmniStore();
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setSavingField(true);
-        setTimeout(() => {
-            // TODO: Update backend/store with new roleId here
-            setSavingField(false);
-            onToggleLock();
-        }, 1500);
+
+        if (responsibilityId === undefined || roleId === undefined) {
+            return;
+        }
+
+        await updateResponsibilityRole(responsibilityId, roleId);
+
+        setSavingField(false);
+        onToggleLock();
     };
 
     return (

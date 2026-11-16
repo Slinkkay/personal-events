@@ -16,11 +16,16 @@ export type AssociateToRolePersistenceCommand = {
     id: string;
 };
 
+export type RemoveExistingAssociationCommand = {
+    responsibilityId: string;
+};
+
 export type GenerateAssociateId = {
     generate(): ValueResult<string>;
 };
 
 export type AssociateToRolePersistence = {
+    removeExistingAssociation(command: RemoveExistingAssociationCommand): Promise<Result>;
     persist(command: AssociateToRolePersistenceCommand): Promise<Result>;
 };
 
@@ -31,6 +36,17 @@ export function makeAssociateToRole(
 ): AssociateToRole {
     return {
         associate: async ({ responsibilityId, roleId }) => {
+            const removeResult = await persistence.removeExistingAssociation({
+                responsibilityId,
+            });
+
+            if (!isSuccess(removeResult)) {
+                appLogger.error({
+                    type: "associateToRole:remove-existing-association",
+                });
+                return failure();
+            }
+
             const idResult = generateId.generate();
 
             if (!isSuccess(idResult)) {
