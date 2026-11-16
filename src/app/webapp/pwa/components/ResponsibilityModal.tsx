@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useOmniStore, RespStatus } from "../useOmniStore";
 import { X, GitCommit, Edit3, Lock, Loader2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
@@ -15,24 +15,40 @@ const RoleField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ responsibilityId, roleId, setRoleId, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ responsibilityId, roleId, setRoleId, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const { data } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
     const { updateResponsibilityRole } = useOmniStore();
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLSelectElement>(null);
+
+    useEffect(() => {
+        if (isEditMode && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [isEditMode, isUnlocked]);
 
     const handleSave = async () => {
         setSavingField(true);
-
-        if (responsibilityId === undefined || roleId === undefined) {
-            return;
-        }
-
+        if (responsibilityId === undefined || roleId === undefined) return;
         await updateResponsibilityRole(responsibilityId, roleId);
-
         setSavingField(false);
         onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setRoleId(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -43,6 +59,7 @@ const RoleField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -72,9 +89,11 @@ const RoleField: React.FC<
                 )}
             </div>
             <select
+                ref={inputRef}
                 value={roleId}
                 disabled={isEditMode && !isUnlocked}
                 onChange={(e) => setRoleId(e.target.value)}
+                onKeyDown={handleKeyDown}
                 required
                 className={`w-full px-3 py-2 border rounded-xl text-xs transition-colors ${
                     isEditMode && !isUnlocked
@@ -100,23 +119,39 @@ const TitleField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ responsibilityId, title, setTitle, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ responsibilityId, title, setTitle, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
     const { updateResponsibilityTitle } = useOmniStore();
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isEditMode && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [isEditMode, isUnlocked]);
 
     const handleSave = async () => {
         setSavingField(true);
-
-        if (!responsibilityId) {
-            return;
-        }
-
+        if (!responsibilityId) return;
         await updateResponsibilityTitle(responsibilityId, title);
-
         setSavingField(false);
         onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setTitle(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -127,6 +162,7 @@ const TitleField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -156,11 +192,13 @@ const TitleField: React.FC<
                 )}
             </div>
             <input
+                ref={inputRef}
                 type="text"
                 required
                 disabled={isEditMode && !isUnlocked}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="e.g. Lead for Feature X Development"
                 className={`w-full px-3 py-2 border rounded-xl text-xs transition-colors ${
                     isEditMode && !isUnlocked
@@ -180,21 +218,39 @@ const DescriptionField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ responsibilityId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ responsibilityId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
     const { updateResponsibilityDescription } = useOmniStore();
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (isEditMode && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [isEditMode, isUnlocked]);
 
     const handleSave = async () => {
-        if (responsibilityId === undefined) {
-            return;
-        }
+        if (responsibilityId === undefined) return;
         setSavingField(true);
         await updateResponsibilityDescription(responsibilityId, description);
-
         setSavingField(false);
         onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setDescription(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -205,6 +261,7 @@ const DescriptionField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -234,10 +291,12 @@ const DescriptionField: React.FC<
                 )}
             </div>
             <textarea
+                ref={inputRef}
                 rows={5}
                 disabled={isEditMode && !isUnlocked}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Describe the guiding goals and targets..."
                 className={`w-full px-3 py-2 border rounded-xl font-mono text-[11px] transition-colors ${
                     isEditMode && !isUnlocked
@@ -257,22 +316,39 @@ const StatusField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: RespStatus;
     }
-> = ({ responsibilityId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ responsibilityId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(responsibilityId);
     const { updateResponsibilityStatus } = useOmniStore();
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLSelectElement>(null);
+
+    useEffect(() => {
+        if (isEditMode && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [isEditMode, isUnlocked]);
 
     const handleSave = async () => {
         setSavingField(true);
-
-        if (responsibilityId === undefined) {
-            return;
-        }
-
+        if (responsibilityId === undefined) return;
         await updateResponsibilityStatus(responsibilityId, status);
         setSavingField(false);
         onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setStatus(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -283,6 +359,7 @@ const StatusField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -312,9 +389,11 @@ const StatusField: React.FC<
                 )}
             </div>
             <select
+                ref={inputRef}
                 value={status}
                 disabled={isEditMode && !isUnlocked}
                 onChange={(e) => setStatus(e.target.value as RespStatus)}
+                onKeyDown={handleKeyDown}
                 className={`w-full px-3 py-2 border rounded-xl text-xs font-semibold transition-colors ${
                     isEditMode && !isUnlocked
                         ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
@@ -337,7 +416,12 @@ export const ResponsibilityModal: React.FC = () => {
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState<RespStatus>("OPEN");
 
-    // Track which field is currently unlocked (null means all are locked)
+    // Track original values when a field is unlocked so we can revert on escape
+    const [originalRoleId, setOriginalRoleId] = useState("");
+    const [originalTitle, setOriginalTitle] = useState("");
+    const [originalDescription, setOriginalDescription] = useState("");
+    const [originalStatus, setOriginalStatus] = useState<RespStatus>("OPEN");
+
     const [unlockedField, setUnlockedField] = useState<"role" | "title" | "description" | "status" | null>(null);
 
     const isOpen = dialogData.responsibility !== null;
@@ -362,6 +446,36 @@ export const ResponsibilityModal: React.FC = () => {
             setUnlockedField(null);
         }
     }, [responsibilityId, defaultRoleId, data.responsibilities, data.roles, isOpen]);
+
+    // Close modal on Escape when open and no field is actively being edited
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && unlockedField === null) {
+                e.preventDefault();
+                closeResponsibility();
+            }
+        };
+
+        window.addEventListener("keydown", handleGlobalKeyDown);
+        return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+    }, [isOpen, unlockedField, closeResponsibility]);
+
+    // Handle unlocking a field and capturing its starting value for Escape-reverts
+    const handleToggleLock = (field: "role" | "title" | "description" | "status") => {
+        if (unlockedField === field) {
+            setUnlockedField(null);
+        } else {
+            if (unlockedField === null) {
+                setOriginalRoleId(roleId);
+                setOriginalTitle(title);
+                setOriginalDescription(description);
+                setOriginalStatus(status);
+            }
+            setUnlockedField(field);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -424,8 +538,9 @@ export const ResponsibilityModal: React.FC = () => {
                         roleId={roleId}
                         setRoleId={setRoleId}
                         isUnlocked={unlockedField === "role"}
-                        onToggleLock={() => setUnlockedField(unlockedField === "role" ? null : "role")}
+                        onToggleLock={() => handleToggleLock("role")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalRoleId}
                     />
 
                     <TitleField
@@ -433,8 +548,9 @@ export const ResponsibilityModal: React.FC = () => {
                         title={title}
                         setTitle={setTitle}
                         isUnlocked={unlockedField === "title"}
-                        onToggleLock={() => setUnlockedField(unlockedField === "title" ? null : "title")}
+                        onToggleLock={() => handleToggleLock("title")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalTitle}
                     />
 
                     <DescriptionField
@@ -442,8 +558,9 @@ export const ResponsibilityModal: React.FC = () => {
                         description={description}
                         setDescription={setDescription}
                         isUnlocked={unlockedField === "description"}
-                        onToggleLock={() => setUnlockedField(unlockedField === "description" ? null : "description")}
+                        onToggleLock={() => handleToggleLock("description")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalDescription}
                     />
 
                     <StatusField
@@ -451,8 +568,9 @@ export const ResponsibilityModal: React.FC = () => {
                         status={status}
                         setStatus={setStatus}
                         isUnlocked={unlockedField === "status"}
-                        onToggleLock={() => setUnlockedField(unlockedField === "status" ? null : "status")}
+                        onToggleLock={() => handleToggleLock("status")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalStatus}
                     />
 
                     {/* Modal Actions */}

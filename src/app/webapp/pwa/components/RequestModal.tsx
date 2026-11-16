@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useOmniStore, RequestStatus } from "../useOmniStore";
 import { X, CheckSquare, Edit3, Search, Check, Lock, Loader2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
@@ -20,12 +20,21 @@ const ResponsibilityField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ requestId, responsibilityId, setResponsibilityId, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ requestId, responsibilityId, setResponsibilityId, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const { data } = useOmniStore();
     const [respSearchQuery, setRespSearchQuery] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [savingField, setSavingField] = useState(false);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (requestId && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [requestId, isUnlocked]);
 
     const selectedRespLabel = useMemo(() => {
         const selectedResp = data.responsibilities.find((r) => r.id === responsibilityId);
@@ -43,6 +52,19 @@ const ResponsibilityField: React.FC<
         }, 5000);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setResponsibilityId(originalValue);
+            setIsDropdownOpen(false);
+            onToggleLock();
+        }
+    };
+
     const isEditMode = Boolean(requestId);
 
     return (
@@ -53,6 +75,7 @@ const ResponsibilityField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -89,6 +112,7 @@ const ResponsibilityField: React.FC<
                 <div className="relative">
                     <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
                     <input
+                        ref={inputRef}
                         type="text"
                         required
                         disabled={isEditMode && !isUnlocked}
@@ -101,6 +125,7 @@ const ResponsibilityField: React.FC<
                             }
                         }}
                         onChange={(e) => setRespSearchQuery(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className={`w-full pl-8 pr-8 py-2 border rounded-xl text-xs transition-colors ${
                             isEditMode && !isUnlocked
                                 ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
@@ -180,11 +205,20 @@ const DescriptionField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ requestId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ requestId, description, setDescription, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const { updateRequestDescription } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (requestId && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [requestId, isUnlocked]);
 
     const handleSave = () => {
         setSavingField(true);
@@ -192,6 +226,20 @@ const DescriptionField: React.FC<
             return;
         }
         updateRequestDescription(requestId, description);
+        setSavingField(false);
+        onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setDescription(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -204,6 +252,7 @@ const DescriptionField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -233,11 +282,13 @@ const DescriptionField: React.FC<
                 )}
             </div>
             <textarea
+                ref={inputRef}
                 rows={5}
                 required
                 disabled={isEditMode && !isUnlocked}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder={"API Spec Review\nDraft the OpenAPI 3.0 specification document..."}
                 className={`w-full px-3 py-2 border rounded-xl font-mono text-[11px] transition-colors ${
                     isEditMode && !isUnlocked
@@ -257,11 +308,20 @@ const DueDateField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: string;
     }
-> = ({ requestId, dueDate, setDueDate, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ requestId, dueDate, setDueDate, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const { updateRequestDueDate } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (requestId && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [requestId, isUnlocked]);
 
     const handleSave = () => {
         setSavingField(true);
@@ -269,6 +329,20 @@ const DueDateField: React.FC<
             return;
         }
         updateRequestDueDate(requestId, dueDate);
+        setSavingField(false);
+        onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setDueDate(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -279,6 +353,7 @@ const DueDateField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -308,11 +383,13 @@ const DueDateField: React.FC<
                 )}
             </div>
             <input
+                ref={inputRef}
                 type="date"
                 required
                 disabled={isEditMode && !isUnlocked}
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className={`w-full px-3 py-2 border rounded-xl text-xs transition-colors ${
                     isEditMode && !isUnlocked
                         ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
@@ -331,11 +408,20 @@ const StatusField: React.FC<
         isUnlocked: boolean;
         onToggleLock: () => void;
         isAnyLocked: boolean;
+        originalValue: RequestStatus;
     }
-> = ({ requestId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked }) => {
+> = ({ requestId, status, setStatus, isUnlocked, onToggleLock, isAnyLocked, originalValue }) => {
     const { updateRequestStatus } = useOmniStore();
     const [savingField, setSavingField] = useState(false);
     const isEditMode = Boolean(requestId);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
+    const inputRef = useRef<HTMLSelectElement>(null);
+
+    useEffect(() => {
+        if (requestId && isUnlocked) {
+            inputRef.current?.focus();
+        }
+    }, [requestId, isUnlocked]);
 
     const handleSave = () => {
         setSavingField(true);
@@ -343,6 +429,20 @@ const StatusField: React.FC<
             return;
         }
         updateRequestStatus(requestId, status);
+        setSavingField(false);
+        onToggleLock();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Tab" && !e.shiftKey && isUnlocked) {
+            e.preventDefault();
+            saveButtonRef.current?.focus();
+        } else if (e.key === "Escape" && isUnlocked) {
+            e.preventDefault();
+            e.stopPropagation();
+            setStatus(originalValue);
+            onToggleLock();
+        }
     };
 
     return (
@@ -353,6 +453,7 @@ const StatusField: React.FC<
                     <div className="flex items-center gap-2">
                         {isUnlocked ? (
                             <button
+                                ref={saveButtonRef}
                                 type="button"
                                 onClick={handleSave}
                                 disabled={savingField}
@@ -382,9 +483,11 @@ const StatusField: React.FC<
                 )}
             </div>
             <select
+                ref={inputRef}
                 value={status}
                 disabled={isEditMode && !isUnlocked}
                 onChange={(e) => setStatus(e.target.value as RequestStatus)}
+                onKeyDown={handleKeyDown}
                 className={`w-full px-3 py-2 border rounded-xl text-xs font-semibold transition-colors ${
                     isEditMode && !isUnlocked
                         ? "bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed"
@@ -407,6 +510,12 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
     const [status, setStatus] = useState<RequestStatus>("OPEN");
+
+    // Track original values for Escape-reverts
+    const [originalResponsibilityId, setOriginalResponsibilityId] = useState("");
+    const [originalDescription, setOriginalDescription] = useState("");
+    const [originalDueDate, setOriginalDueDate] = useState("");
+    const [originalStatus, setOriginalStatus] = useState<RequestStatus>("OPEN");
 
     // Track which field is currently unlocked (null means all are locked)
     const [unlockedField, setUnlockedField] = useState<"responsibility" | "description" | "dueDate" | "status" | null>(
@@ -435,6 +544,36 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
             setStatus("OPEN");
         }
     }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
+
+    // Close modal on Escape when open and no field is actively being edited
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && unlockedField === null) {
+                e.preventDefault();
+                onClose();
+            }
+        };
+
+        window.addEventListener("keydown", handleGlobalKeyDown);
+        return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+    }, [isOpen, unlockedField, onClose]);
+
+    // Handle unlocking a field and caching its original value for potential escapes
+    const handleToggleLock = (field: "responsibility" | "description" | "dueDate" | "status") => {
+        if (unlockedField === field) {
+            setUnlockedField(null);
+        } else {
+            if (unlockedField === null) {
+                setOriginalResponsibilityId(responsibilityId);
+                setOriginalDescription(description);
+                setOriginalDueDate(dueDate);
+                setOriginalStatus(status);
+            }
+            setUnlockedField(field);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -490,10 +629,9 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                         responsibilityId={responsibilityId}
                         setResponsibilityId={setResponsibilityId}
                         isUnlocked={unlockedField === "responsibility"}
-                        onToggleLock={() =>
-                            setUnlockedField(unlockedField === "responsibility" ? null : "responsibility")
-                        }
+                        onToggleLock={() => handleToggleLock("responsibility")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalResponsibilityId}
                     />
 
                     <DescriptionField
@@ -501,8 +639,9 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                         description={description}
                         setDescription={setDescription}
                         isUnlocked={unlockedField === "description"}
-                        onToggleLock={() => setUnlockedField(unlockedField === "description" ? null : "description")}
+                        onToggleLock={() => handleToggleLock("description")}
                         isAnyLocked={isAnyLocked}
+                        originalValue={originalDescription}
                     />
 
                     <div className="grid grid-cols-2 gap-3">
@@ -511,16 +650,18 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                             dueDate={dueDate}
                             setDueDate={setDueDate}
                             isUnlocked={unlockedField === "dueDate"}
-                            onToggleLock={() => setUnlockedField(unlockedField === "dueDate" ? null : "dueDate")}
+                            onToggleLock={() => handleToggleLock("dueDate")}
                             isAnyLocked={isAnyLocked}
+                            originalValue={originalDueDate}
                         />
                         <StatusField
                             requestId={requestId}
                             status={status}
                             setStatus={setStatus}
                             isUnlocked={unlockedField === "status"}
-                            onToggleLock={() => setUnlockedField(unlockedField === "status" ? null : "status")}
+                            onToggleLock={() => handleToggleLock("status")}
                             isAnyLocked={isAnyLocked}
+                            originalValue={originalStatus}
                         />
                     </div>
 
