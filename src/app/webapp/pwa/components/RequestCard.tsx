@@ -1,6 +1,6 @@
 import React from "react";
 import { RequestItem, RequestStatus, useOmniStore } from "../useOmniStore";
-import { StatusBadge, StatusSelect } from "./common";
+import { MarkdownViewer, StatusBadge, StatusSelect } from "./common";
 import { Edit3, Trash2 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
 
@@ -41,7 +41,7 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
                     <StatusBadge type="request" status={request.status} dueDate={request.dueDate} />
                 </div>
 
-                {reqBody && <p className="text-[11px] text-slate-600 line-clamp-2">{reqBody}</p>}
+                <MarkdownViewer content={reqBody} />
 
                 {roleTag && (
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-0.5">
