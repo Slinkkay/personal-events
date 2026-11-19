@@ -111,7 +111,9 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                         {requests.length === 0 ? (
                             <p className="text-xs text-slate-400 italic py-1">No requests created yet.</p>
                         ) : (
-                            requests.map((req) => <RequestCard key={req.id} requestId={req.id} />)
+                            requests
+                                .filter((req) => req.status !== "CLOSED")
+                                .map((req) => <RequestCard key={req.id} requestId={req.id} />)
                         )}
                     </div>
                 </div>
