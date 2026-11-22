@@ -6,10 +6,18 @@ import { RequestCard } from "./components/RequestCard";
 export const RequestsView: React.FC = () => {
     const { data } = useOmniStore();
     const [searchQuery, setSearchQuery] = useState("");
-    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [statusFilter, setStatusFilter] = useState("NOT_CLOSED");
 
     const filtered = data.requests.filter((req) => {
-        if (statusFilter !== "ALL" && req.status !== statusFilter) return false;
+        if (statusFilter === "NOT_CLOSED") {
+            if (req.status === "CLOSED") {
+                return false;
+            }
+        } else {
+            if (req.status !== statusFilter) {
+                return false;
+            }
+        }
         if (searchQuery.trim() && !req.description.toLowerCase().includes(searchQuery.toLowerCase())) {
             return false;
         }
@@ -39,10 +47,10 @@ export const RequestsView: React.FC = () => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs"
                     >
-                        <option value="ALL">All Statuses</option>
-                        <option value="Ready">Ready</option>
-                        <option value="Working">Working</option>
-                        <option value="Complete">Complete</option>
+                        <option value="NOT_CLOSED">Not Closed</option>
+                        <option value="OPEN">OPEN</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="CLOSED">CLOSED</option>
                     </select>
                 </div>
             </div>
