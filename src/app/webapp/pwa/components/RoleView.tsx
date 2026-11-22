@@ -1,5 +1,5 @@
 import React from "react";
-import { Role, Responsibility, RequestItem } from "../useOmniStore";
+import { Role, Responsibility, RequestItem, useOmniStore } from "../useOmniStore";
 import { StatusBadge, MarkdownViewer } from "./common";
 import { ResponsibilityList } from "./ResponsibilityList";
 import { ChevronRight, ChevronDown, FileText, Plus, Edit3 } from "lucide-react";
@@ -26,8 +26,12 @@ export const RoleView: React.FC<RoleViewProps> = ({
 }) => {
     // Directly consume actions from the store instead of receiving them via props
     const { showResponsibility, showRole } = useDialogStore();
+    const selectedView = useOmniStore((state) => state.selectedView);
+    const selectedResponsibilityId = selectedView.tab === "hierarchy" ? selectedView.responsibilityId : undefined;
 
-    const visibleResponsibilities = responsibilities.filter((res) => res.status == "OPEN");
+    const visibleResponsibilities = responsibilities.filter(
+        (res) => res.status == "OPEN" || res.id === selectedResponsibilityId,
+    );
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all">

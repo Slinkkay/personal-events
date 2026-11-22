@@ -1,19 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useOmniStore } from "./useOmniStore";
 import { SearchBar } from "./components/common";
 import { RoleView } from "./components/RoleView";
 import { Plus } from "lucide-react";
 import { useDialogStore } from "./dialog";
 
-interface HierarchyViewProps {}
-
-export const HierarchyView: React.FC<HierarchyViewProps> = () => {
-    const { data } = useOmniStore();
+export const HierarchyView: React.FC = () => {
+    const { data, selectedView } = useOmniStore();
+    const selection = selectedView.tab === "hierarchy" ? selectedView : undefined;
     const { showRole } = useDialogStore();
     const [searchQuery, setSearchQuery] = useState("");
-    const [showClosed, setShowClosed] = useState(false);
-    const [expandedRoles, setExpandedRoles] = useState<Set<string>>(new Set());
-    const [expandedResp, setExpandedResp] = useState<Set<string>>(new Set());
+    const [showClosed, setShowClosed] = useState(() =>
+        data.roles.some((role) => role.id === selection?.roleId && role.status !== "OPEN"),
+    );
+    const [expandedRoles, setExpandedRoles] = useState<Set<string>>(
+        () => new Set(selection?.roleId ? [selection.roleId] : []),
+    );
+    const [expandedResp, setExpandedResp] = useState<Set<string>>(
+        () => new Set(selection?.responsibilityId ? [selection.responsibilityId] : []),
+    );
+
+    useEffect(() => {
+        if (!selection?.roleId) return;
+        setExpandedRoles((current) => new Set(current).add(selection.roleId!));
+        if (selection.responsibilityId) {
+            setExpandedResp((current) => new Set(current).add(selection.responsibilityId!));
+        }
+        setSearchQuery("");
+    }, [selectedView]);
+
+    useEffect(() => {
+        if (selection?.roleId && data.roles.some((role) => role.id === selection.roleId && role.status !== "OPEN")) {
+            setShowClosed(true);
+        }
+    }, [selectedView, data.roles]);
 
     const toggleRoleExpand = (id: string) => {
         const next = new Set(expandedRoles);

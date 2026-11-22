@@ -37,6 +37,8 @@ export interface OmniData {
     requests: RequestItem[];
 }
 
+export type SelectedView = { tab: "requests" } | { tab: "hierarchy"; roleId?: string; responsibilityId?: string };
+
 export type ECSData = {
     IsRole: { [key: string]: boolean };
     IsResponsibility: { [key: string]: boolean };
@@ -101,6 +103,8 @@ export interface GraphQLConfig {
 type OmniStoreState = {
     data: OmniData;
     ecsData: ECSData;
+    selectedView: SelectedView;
+    setSelectedView: (view: SelectedView) => void;
 
     fetchCurrent: () => Promise<void>;
 
@@ -316,6 +320,8 @@ export const useOmniStore = create<OmniStoreState>()(
             };
 
             return {
+                selectedView: { tab: "hierarchy" },
+                setSelectedView: (selectedView) => setState({ selectedView }),
                 data: {
                     requests: [],
                     responsibilities: [],

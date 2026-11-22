@@ -12,7 +12,7 @@ interface RequestCardProps {
 }
 
 export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, onEdit }) => {
-    const { updateRequestStatus, ecsData } = useOmniStore();
+    const { updateRequestStatus, ecsData, setSelectedView } = useOmniStore();
     const { showRequest } = useDialogStore();
 
     const request = ecsData?.Request[requestId];
@@ -30,9 +30,9 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
 
     let roleTitle: string | null = null;
     let respTitle: string | null = null;
+    const roleId = ecsData.PartOf[responsibilityId];
 
     if (roleTag) {
-        const roleId = ecsData.PartOf[responsibilityId];
         roleTitle = ecsData.Role[roleId].title;
         respTitle = ecsData.Responsibility[responsibilityId].title;
     }
@@ -49,11 +49,21 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
 
                 {roleTag && (
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-0.5">
-                        <span className="font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedView({ tab: "hierarchy", roleId })}
+                            className="font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded hover:underline"
+                        >
                             {roleTitle}
-                        </span>
+                        </button>
                         <span>›</span>
-                        <span className="text-slate-600">{respTitle}</span>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedView({ tab: "hierarchy", roleId, responsibilityId })}
+                            className="text-slate-600 hover:underline"
+                        >
+                            {respTitle}
+                        </button>
                     </div>
                 )}
             </div>

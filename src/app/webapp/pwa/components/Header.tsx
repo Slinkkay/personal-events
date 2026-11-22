@@ -3,16 +3,9 @@ import { Layers, FolderTree, CheckSquare, Plus, FolderPlus } from "lucide-react"
 import { useDialogStore } from "../dialog";
 import { useOmniStore } from "@/app/webapp/pwa/useOmniStore";
 
-type ActiveTab = "hierarchy" | "requests";
-
-interface HeaderProps {
-    activeTab: ActiveTab;
-    setActiveTab: (tab: ActiveTab) => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
+export const Header: React.FC = () => {
     const { showRole, showRequest } = useDialogStore();
-    const { data } = useOmniStore();
+    const { data, selectedView, setSelectedView } = useOmniStore();
 
     return (
         <header className="bg-slate-900 text-white shadow-md border-b border-slate-800 shrink-0">
@@ -38,9 +31,9 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                     {/* View Tab Switcher */}
                     <div className="bg-slate-800 p-1 rounded-xl flex items-center border border-slate-700">
                         <button
-                            onClick={() => setActiveTab("hierarchy")}
+                            onClick={() => setSelectedView({ tab: "hierarchy" })}
                             className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-2 ${
-                                activeTab === "hierarchy"
+                                selectedView.tab === "hierarchy"
                                     ? "bg-indigo-600 text-white shadow"
                                     : "text-slate-300 hover:text-white"
                             }`}
@@ -48,9 +41,9 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                             <FolderTree className="w-4 h-4" /> Roles Hierarchy
                         </button>
                         <button
-                            onClick={() => setActiveTab("requests")}
+                            onClick={() => setSelectedView({ tab: "requests" })}
                             className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-2 ${
-                                activeTab === "requests"
+                                selectedView.tab === "requests"
                                     ? "bg-indigo-600 text-white shadow"
                                     : "text-slate-300 hover:text-white"
                             }`}
