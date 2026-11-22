@@ -14,3 +14,11 @@ function getElementByIdOrThrow(id: string): HTMLElement {
     if (!el) throw new Error(`Root element with id '${id}' not found`);
     return el;
 }
+
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("/sw.js")
+            .catch((err) => console.error("Service worker registration failed", err));
+    });
+}

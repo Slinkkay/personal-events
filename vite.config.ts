@@ -5,6 +5,7 @@ import * as fs from "fs";
 import checker from "vite-plugin-checker";
 
 export default defineConfig({
+    publicDir: resolve("./src/app/webapp/pwa/public"),
     build: {
         rollupOptions: {
             output: {

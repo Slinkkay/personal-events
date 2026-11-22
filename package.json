@@ -4,6 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "build": "vite build",
+        "preview": "vite preview",
+        "pwa:icons": "node scripts/generate-pwa-icons.mjs",
         "cli": "tsx ./src/app/cli/index.ts",
         "docs:dev": "vitepress dev docs --host",
         "docs:build": "vitepress build docs",

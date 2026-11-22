@@ -2,7 +2,7 @@
 node_modules/
 
 # VitePress build output
-public/
+/public/
 docs/.vitepress/dist/
 
 # VitePress cache
