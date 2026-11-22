@@ -1,8 +1,9 @@
 import React from "react";
-import { RequestItem, RequestStatus, useOmniStore } from "../useOmniStore";
+import { useOmniStore } from "../useOmniStore";
 import { MarkdownViewer, StatusBadge, StatusSelect } from "./common";
-import { Edit3, Trash2 } from "lucide-react";
+import { Edit3 } from "lucide-react";
 import { useDialogStore } from "@/app/webapp/pwa/dialog";
+import { DueDateBadge } from "@/app/webapp/pwa/components/DueDateBadge";
 
 interface RequestCardProps {
     requestId: string;
@@ -24,6 +25,9 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
     const reqBody = lines.slice(1).join("\n");
     const responsibilityId = ecsData.PartOf[requestId];
 
+    // Static placeholder value while avoiding assumptions about request.dueDate's type
+    const staticDueDate = request.dueDate;
+
     let roleTitle: string | null = null;
     let respTitle: string | null = null;
 
@@ -38,7 +42,7 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
             <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-xs text-slate-900">{reqTitle}</span>
-                    <StatusBadge type="request" status={request.status} dueDate={request.dueDate} />
+                    <StatusBadge type="request" status={request.status} />
                 </div>
 
                 <MarkdownViewer content={reqBody} />
@@ -54,25 +58,29 @@ export const RequestCard: React.FC<RequestCardProps> = ({ requestId, roleTag, on
                 )}
             </div>
 
-            <div className="flex items-center gap-2 self-end md:self-center">
-                <StatusSelect
-                    value={request.status}
-                    onChange={(newStatus) => updateRequestStatus(request.id, newStatus)}
-                />
+            <div className="flex flex-col items-end gap-1.5 self-end md:self-center">
+                <div className="flex items-center gap-2">
+                    <StatusSelect
+                        value={request.status}
+                        onChange={(newStatus) => updateRequestStatus(request.id, newStatus)}
+                    />
 
-                <button
-                    onClick={() =>
-                        showRequest({
-                            type: "edit",
-                            id: request.id,
-                            responsibilityId,
-                        })
-                    }
-                    className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                    title="Edit Request"
-                >
-                    <Edit3 className="w-3.5 h-3.5" />
-                </button>
+                    <button
+                        onClick={() =>
+                            showRequest({
+                                type: "edit",
+                                id: request.id,
+                                responsibilityId,
+                            })
+                        }
+                        className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                        title="Edit Request"
+                    >
+                        <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+
+                <DueDateBadge label={staticDueDate} />
             </div>
         </div>
     );
