@@ -24,7 +24,13 @@ export const getDueDateStatus = (dueDateStr: string, status: RequestStatus): Urg
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const due = new Date(dueDateStr);
+    // "YYYY-MM-DD" strings parse as UTC midnight, which is the previous day in
+    // timezones behind UTC. Build the date in local time so "today" is not overdue.
+    const parts = dueDateStr.split("-").map(Number);
+    const due =
+        parts.length === 3 && parts.every((n) => !isNaN(n))
+            ? new Date(parts[0], parts[1] - 1, parts[2])
+            : new Date(dueDateStr);
     due.setHours(0, 0, 0, 0);
 
     const diffDays = Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
