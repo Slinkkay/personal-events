@@ -50,7 +50,8 @@ export const RoleView: React.FC<RoleViewProps> = ({
                             <StatusBadge type="role" status={role.status} />
                         </div>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                            Created: {role.createdAt} • {visibleResponsibilities.length} Responsibilities
+                            Created: {role.createdAt} •{" "}
+                            {visibleResponsibilities.filter((res) => res.status !== "CLOSED").length} Responsibilities
                         </p>
                     </div>
                 </div>

@@ -108,13 +108,9 @@ export const ResponsibilityCard: React.FC<ResponsibilityCardProps> = ({
                     {/* Nested Requests List */}
                     <div className="space-y-2">
                         <h6 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Requests</h6>
-                        {requests.length === 0 ? (
-                            <p className="text-xs text-slate-400 italic py-1">No requests created yet.</p>
-                        ) : (
-                            requests
-                                .filter((req) => req.status !== "CLOSED")
-                                .map((req) => <RequestCard key={req.id} requestId={req.id} />)
-                        )}
+                        {requests.map((req) => (
+                            <RequestCard key={req.id} requestId={req.id} />
+                        ))}
                     </div>
                 </div>
             )}
