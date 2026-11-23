@@ -9,7 +9,7 @@ type RequestCommand =
       }
     | {
           type: "create";
-          responsibilityId: string;
+          responsibilityId?: string;
       };
 
 type ResponsibilityCommand =
@@ -20,7 +20,7 @@ type ResponsibilityCommand =
       }
     | {
           type: "create";
-          roleId: string;
+          roleId?: string;
       };
 
 type RoleCommand =
@@ -35,14 +35,14 @@ type RoleCommand =
 export type DialogState = {
     request: {
         id?: string;
-        responsibilityId: string;
+        responsibilityId?: string;
     } | null;
     role: {
         id?: string;
     } | null;
     responsibility: {
         id?: string;
-        roleId: string;
+        roleId?: string;
     } | null;
 };
 
@@ -77,9 +77,7 @@ export const useDialogStore = create<DialogStore>()(
                         setState({
                             data: {
                                 ...createNullState(),
-                                request: {
-                                    responsibilityId: command.responsibilityId,
-                                },
+                                request: command.responsibilityId ? { responsibilityId: command.responsibilityId } : {},
                             },
                         });
                         break;
@@ -136,9 +134,7 @@ export const useDialogStore = create<DialogStore>()(
                         setState({
                             data: {
                                 ...createNullState(),
-                                responsibility: {
-                                    roleId: command.roleId,
-                                },
+                                responsibility: command.roleId ? { roleId: command.roleId } : {},
                             },
                         });
                         break;

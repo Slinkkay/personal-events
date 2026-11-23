@@ -101,6 +101,7 @@ const RoleField: React.FC<
                         : "bg-slate-50 border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-800"
                 }`}
             >
+                {!isEditMode && <option value="">Select a role...</option>}
                 {data.roles.map((role) => (
                     <option key={role.id} value={role.id}>
                         {role.title} ({role.status})
@@ -439,13 +440,14 @@ export const ResponsibilityModal: React.FC = () => {
             }
             setUnlockedField(null);
         } else {
-            setRoleId(defaultRoleId || data.roles[0]?.id || "");
+            // Create mode: only pre-fill roleId if explicitly provided by the caller
+            setRoleId(dialogData.responsibility?.roleId || "");
             setTitle("");
             setDescription("");
             setStatus("OPEN");
             setUnlockedField(null);
         }
-    }, [responsibilityId, defaultRoleId, data.responsibilities, data.roles, isOpen]);
+    }, [responsibilityId, dialogData.responsibility?.roleId, data.responsibilities, data.roles, isOpen]);
 
     // Close modal on Escape when open and no field is actively being edited
     useEffect(() => {

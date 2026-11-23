@@ -543,13 +543,13 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
             // Edit state: all fields locked by default
             setUnlockedField(null);
         } else {
-            const initialRespId = dialogData.request?.responsibilityId || data.responsibilities[0]?.id || "";
-            setResponsibilityId(initialRespId);
+            // Create mode: only pre-fill responsibilityId if explicitly provided by the caller
+            setResponsibilityId(dialogData.request?.responsibilityId || "");
             setDescription("");
             setDueDate(getTodayDate());
             setStatus("OPEN");
         }
-    }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
+    }, [requestId, dialogData.request?.responsibilityId, data.requests, data.responsibilities, isOpen]);
 
     // On create, focus the first editable field so the user can start typing right away.
     // If the responsibility is preset by the caller, skip to the description.

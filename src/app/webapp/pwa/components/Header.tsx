@@ -2,6 +2,7 @@ import React from "react";
 import { Layers, FolderTree, CheckSquare, Plus, FolderPlus } from "lucide-react";
 import { useDialogStore } from "../dialog";
 import { useOmniStore } from "@/app/webapp/pwa/useOmniStore";
+import { Omnibar } from "./Omnibar";
 
 export const Header: React.FC = () => {
     const { showRole, showRequest } = useDialogStore();
@@ -75,6 +76,7 @@ export const Header: React.FC = () => {
                     >
                         <Plus className="w-4 h-4" /> New Request
                     </button>
+                    <Omnibar />
                 </div>
             </div>
         </header>
