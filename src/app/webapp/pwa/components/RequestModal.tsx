@@ -506,10 +506,15 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
     const { data, addRequest } = useOmniStore();
     const { data: dialogData } = useDialogStore();
 
+    const getTodayDate = () => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+
     const formRef = useRef<HTMLFormElement>(null);
     const [responsibilityId, setResponsibilityId] = useState("");
     const [description, setDescription] = useState("");
-    const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
+    const [dueDate, setDueDate] = useState(getTodayDate);
     const [status, setStatus] = useState<RequestStatus>("OPEN");
 
     // Track original values for Escape-reverts
@@ -541,7 +546,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
             const initialRespId = dialogData.request?.responsibilityId || data.responsibilities[0]?.id || "";
             setResponsibilityId(initialRespId);
             setDescription("");
-            setDueDate(new Date().toISOString().split("T")[0]);
+            setDueDate(getTodayDate());
             setStatus("OPEN");
         }
     }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
