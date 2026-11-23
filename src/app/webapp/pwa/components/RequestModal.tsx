@@ -506,6 +506,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
     const { data, addRequest } = useOmniStore();
     const { data: dialogData } = useDialogStore();
 
+    const formRef = useRef<HTMLFormElement>(null);
     const [responsibilityId, setResponsibilityId] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -544,6 +545,17 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
             setStatus("OPEN");
         }
     }, [requestId, dialogData.request?.id, data.requests, data.responsibilities, isOpen]);
+
+    // On create, focus the first editable field so the user can start typing right away.
+    // If the responsibility is preset by the caller, skip to the description.
+    const presetResponsibilityId = dialogData.request?.responsibilityId;
+    useEffect(() => {
+        if (!isOpen || requestId) return;
+        const target = presetResponsibilityId
+            ? formRef.current?.querySelector<HTMLElement>("textarea")
+            : formRef.current?.querySelector<HTMLElement>("input:not(:disabled)");
+        target?.focus();
+    }, [isOpen, requestId, presetResponsibilityId]);
 
     // Close modal on Escape when open and no field is actively being edited
     useEffect(() => {
@@ -612,7 +624,7 @@ export const RequestModal: React.FC<RequestModalProps> = ({ isOpen, onClose }) =
                 </div>
 
                 {/* Modal Form Body */}
-                <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
+                <form ref={formRef} onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
                     {isEditMode && (
                         <div className="bg-slate-100 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between font-mono text-slate-600">
                             <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">
